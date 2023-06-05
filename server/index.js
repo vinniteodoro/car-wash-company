@@ -5,11 +5,11 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 
 const db = mysql.createPool({
-  host:'carwash.cxtvpr3ebcir.sa-east-1.rds.amazonaws.com',
-  port: '3306',
-  user: 'admin',
-  password: '1597534862Ve',
-  database: 'carwash'
+  host: proccess.env.MYSQL_HOST,
+  port: proccess.env.MYSQL_PORT,
+  user: proccess.env.MYSQL_USER,
+  password: proccess.env.MYSQL_PASSWORD,
+  database: proccess.env.MYSQL_DATABASE
 })
 
 app.use(cors())

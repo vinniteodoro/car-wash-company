@@ -35,7 +35,7 @@ export default function RegisterScreen({navigation}) {
     if (password === confirmPassword) {
       try {
         if (type==='Cliente'||type==='Fornecedor') {
-          await Axios.post('http://localhost:3001/api/register', {email: email, type: type})
+          await Axios.post('http://35.174.15.198:3001/api/register', {email: email, type: type})
           //await createUserWithEmailAndPassword(auth, email, password)
           //await addDoc(usersRef, {email: email, userType: type, createdAt: Timestamp.now(), cpfcnpj: '', celular: '', nome: ''})
           updateUserType(type)
