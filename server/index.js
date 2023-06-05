@@ -17,10 +17,9 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.get('/api/userType', (req, res) => {
-  const validate = 'select type from users where email=?'
   const email = 'vinitbasilio@hotmail.com'
 
-  db.query(validate, [email], (err, result) => {
+  db.query('select type from users where email=?', [email], (err, result) => {
     if (err) {
       res.send(err)
     } else {
@@ -32,23 +31,18 @@ app.get('/api/userType', (req, res) => {
 app.post('/api/register', (req, res) => {
   const email = req.body.email
   const type = req.body.type
-  const errMessages = {
-    'auth/missing-password': 'Insira uma senha',
-    'auth/weak-password': 'Senha fraca, use outra',
-    'auth/email-already-in-use': 'E-mail já cadastrado',
-    'auth/missing-email': 'Preencha um e-mail',
-    'auth/invalid-email': 'E-mail inválido',
-  }
   
-
-  const insert = 'INSERT INTO users (email, type) values (?, ?)'
-  db.query(insert, [email, type], (err, result) => {
+  db.query('INSERT INTO users (email, type) values (?, ?)', [email, type], (err, result) => {
     if (err) {
-      const errMessage = errMessages[err.code] || err.code
-      res.status(500).send(errMessage)
-      console.log(errMessage)
+      if (err.code === 'ER_DUP_ENTRY') {
+        res.status(400).send('E-mail já cadastrado')
+      } else if (err.code === 'ER_BAD_NULL_ERROR') {
+        res.status(400).send('Preencha os campos')
+      } else {
+        res.status(500).send('Falha ao conectar com o servidor, tente novamente')
+      }
     } else {
-      res.status(200)
+      res.status(200).send(result)
     }
   })
 })
