@@ -36,13 +36,13 @@ export default function RegisterScreen({navigation}) {
     if (password === confirmPassword) {
       try {
         const resp = await Axios.post('http://'+server+'/api/register', {email: email, type: type})
-          //await createUserWithEmailAndPassword(auth, email, password)
-          //await sendEmailVerification(auth.currentUser)
-          setLoading(false)
-          updateUserType(type)
-          console.log(resp.data)
-          Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK'}])
-          //Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
+        //await createUserWithEmailAndPassword(auth, email, password)
+        //await sendEmailVerification(auth.currentUser)
+        setLoading(false)
+        updateUserType(type)
+        console.log(resp.data)
+        Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK'}])
+        //Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
       } catch (error) {
         setLoading(false)
         console.log(error.response.data)
