@@ -1,0 +1,88 @@
+import {KeyboardAvoidingView, Text, TouchableOpacity, View,TextInput,Alert} from 'react-native'
+import {updatePassword} from 'firebase/auth'
+import {auth} from '../configs/firebase'
+import React, {useState} from 'react'
+import AppLoader from '../configs/loader'
+import {Ionicons} from '@expo/vector-icons'
+import ToastContainer, {Toast} from 'toastify-react-native'
+
+export default function TrocaSenhaScreen({navigation}) {
+  const user = auth.currentUser
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+  const handleTrocaSenha = async () => {
+    setLoading(true)
+  
+    if (newPassword === confirmNewPassword) {
+      try {
+        await updatePassword(user, newPassword)
+
+        setLoading(false)
+        Alert.alert('ÊXITO', 'Senha foi trocada com sucesso', [{text: 'OK', onPress: () => navigation.navigate('Perfil')}])
+      } catch (error) {
+        setLoading(false)
+        Toast.error('Não conseguimos trocar a senha, tente novamente')
+      }
+    } else {
+      setLoading(false)
+      Toast.warn('As senhas que digitou são diferentes')
+    }
+  }
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword)
+  }
+
+  return (
+    <View className="p-5 bg-white flex-1 items-center">
+      <ToastContainer/>
+      <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Trocar senha</Text>
+      <Text className="w-full text-base text-center">Fique à vontade para cadastrar a sua nova senha</Text>
+      <View className="relative w-full">
+        <TextInput 
+          className="w-full h-14 rounded-md text-xl bg-gray-500/10 focus:border-blue-950/90 focus:border-2 mt-12 pl-2" 
+          placeholder='Senha' 
+          value={newPassword} 
+          onChangeText={setNewPassword}
+          secureTextEntry={!showPassword}
+        />
+        <View className="absolute right-2 top-16">
+          <Ionicons
+            name={showPassword ? 'eye-off' : 'eye'}
+            size={24}
+            color="gray"
+            onPress={toggleShowPassword}
+          />
+        </View>
+      </View>
+      <View className="relative w-full">
+        <TextInput 
+          className="w-full h-14 rounded-md text-xl bg-gray-500/10 focus:border-blue-950/90 focus:border-2 mt-2 pl-2" 
+          placeholder='Confirme' 
+          value={confirmNewPassword} 
+          onChangeText={setConfirmNewPassword}
+          secureTextEntry={!showConfirmPassword}
+        />
+        <View className="absolute right-2 top-6">
+          <Ionicons
+            name={showConfirmPassword ? 'eye-off' : 'eye'}
+            size={24}
+            color="gray"
+            onPress={toggleShowConfirmPassword}
+          />
+        </View>
+      </View>
+      <TouchableOpacity className="h-12 bg-blue-950/90 items-center justify-center w-full mt-4" onPress={handleTrocaSenha}>
+        {loading ? (<AppLoader/>) : (<Text className="text-white font-bold text-lg">Trocar senha</Text>)}
+      </TouchableOpacity>
+    </View>
+  )
+}
