@@ -29,15 +29,15 @@ app.get('/api/userType', (req, res) => {
 })
 
 app.post('/api/register', (req, res) => {
-  const email = req.body.email
-  const type = req.body.type
+  const email = req.body.email === '' ? null : req.body.email
+  const type = req.body.type === '' ? null : req.body.type
   
   db.query('INSERT INTO users (email, type) values (?, ?)', [email, type], (err, result) => {
     if (err) {
       if (err.code === 'ER_DUP_ENTRY') {
         res.status(400).send('E-mail já cadastrado')
       } else if (err.code === 'ER_BAD_NULL_ERROR') {
-        res.status(400).send('Preencha os campos')
+        res.status(400).send('Preencha todos os campos')
       } else {
         res.status(500).send('Falha ao conectar com o servidor, tente novamente')
       }

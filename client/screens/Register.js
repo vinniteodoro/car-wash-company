@@ -18,14 +18,14 @@ export function updateUserType(newType) {
 
 const options = [
   {value: 'Cliente', label: 'Cliente'},
-  {value: 'Fornecedor', label: 'Fornecedor'}
+  {value: 'Parceiro', label: 'Parceiro'}
 ]
 
 export default function RegisterScreen({navigation}) {
-  const [email, setEmail] = useState()
-  const [password, setPassword] = useState()
-  const [confirmPassword, setConfirmPassword] = useState()
-  const [type, setType] = useState()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [type, setType] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -34,20 +34,19 @@ export default function RegisterScreen({navigation}) {
     setLoading(true)
 
     if (password === confirmPassword) {
-      const resp = await Axios.post('http://'+server+'/api/register', {email: email, type: type})
-
-      if (resp.status===200) {
-        updateUserType(type)
-        //await createUserWithEmailAndPassword(auth, email, password)
-        //await sendEmailVerification(auth.currentUser)
+      try {
+        const resp = await Axios.post('http://'+server+'/api/register', {email: email, type: type})
+          //await createUserWithEmailAndPassword(auth, email, password)
+          //await sendEmailVerification(auth.currentUser)
+          setLoading(false)
+          updateUserType(type)
+          console.log(resp.data)
+          Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK'}])
+          //Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
+      } catch (error) {
         setLoading(false)
-        console.log(resp.data)
-        Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK'}])
-        //Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
-      } else {
-        setLoading(false)
-        console.log(resp.data)
-        Alert.alert('ERRO', resp.data, [{text: 'OK'}])
+        console.log(error.response.data)
+        Alert.alert('ERRO', error, [{text: 'OK'}])
       }
     } else {
       setLoading(false)
