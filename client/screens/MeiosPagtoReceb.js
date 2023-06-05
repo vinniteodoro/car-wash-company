@@ -5,7 +5,7 @@ import {query, where, getDocs, doc, deleteDoc} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {userType} from './SignUp'
+import {userType} from './Register'
 
 export default function MeiosPagtoRecebScreen({navigation}) {
   const [loading, setLoading] = useState(false)

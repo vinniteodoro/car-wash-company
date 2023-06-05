@@ -4,7 +4,7 @@ import {TextInput} from 'react-native'
 import {signInWithEmailAndPassword} from 'firebase/auth'
 import {query, where, getDocs} from 'firebase/firestore'
 import {auth,usersRef} from '../configs/firebase'
-import {updateUserType} from './SignUp'
+import {updateUserType} from './Register'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
 

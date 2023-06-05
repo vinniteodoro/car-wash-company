@@ -1,6 +1,6 @@
 import React from 'react'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import {userType} from './screens/SignUp'
+import {userType} from './screens/Register'
 import {Ionicons} from '@expo/vector-icons'
 import Inicio from './screens/Inicio'
 import Perfil from './screens/Perfil'

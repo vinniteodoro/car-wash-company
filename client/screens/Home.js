@@ -25,7 +25,7 @@ export default function HomeScreen({navigation}) {
           <TouchableOpacity className="flex-1 h-14 bg-blue-950/90 items-center justify-center mt-12 mr-2" onPress={() => navigation.navigate('Login')}>
             <Text className="text-white font-bold text-lg">Entrar</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 h-14 items-center mt-12 justify-center" onPress={() => navigation.navigate('SignUp')}>
+          <TouchableOpacity className="flex-1 h-14 items-center mt-12 justify-center" onPress={() => navigation.navigate('Register')}>
             <Text className="font-bold text-lg">Criar conta</Text>
           </TouchableOpacity>
         </View>

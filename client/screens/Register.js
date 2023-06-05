@@ -8,6 +8,7 @@ import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
 import {SelectList} from 'react-native-dropdown-select-list'
 import Axios from 'axios'
+import {server} from '../configs/server'
 
 export var userType
 
@@ -33,34 +34,24 @@ export default function RegisterScreen({navigation}) {
     setLoading(true)
 
     if (password === confirmPassword) {
-      try {
-        if (type==='Cliente'||type==='Fornecedor') {
-          await Axios.post('http://35.174.15.198:3001/api/register', {email: email, type: type})
-          //await createUserWithEmailAndPassword(auth, email, password)
-          //await addDoc(usersRef, {email: email, userType: type, createdAt: Timestamp.now(), cpfcnpj: '', celular: '', nome: ''})
+      if (type==='Cliente'||type==='Fornecedor') {
+        const resp = await Axios.post('http://'+server+'/api/register', {email: email, type: type})
+
+        if (resp.status===200) {
           updateUserType(type)
-        
+          //await createUserWithEmailAndPassword(auth, email, password)
           //await sendEmailVerification(auth.currentUser)
-    
           setLoading(false)
-          Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
+          Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK'}])
+          //Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
         } else {
           setLoading(false)
-          Alert.alert('ATENÇÃO', 'Escolha se a sua conta será de Cliente ou Fornecedor', [{text: 'OK'}])
+          console.log(resp.data)
+          Alert.alert('ERRO', resp.data, [{text: 'OK'}])
         }
-      } catch (error) {
+      } else {
         setLoading(false)
-  
-        const errorMessages = {
-          'auth/missing-password': 'Insira uma senha',
-          'auth/weak-password': 'Senha fraca, use outra',
-          'auth/email-already-in-use': 'E-mail já cadastrado',
-          'auth/missing-email': 'Preencha um e-mail',
-          'auth/invalid-email': 'E-mail inválido',
-        }
-        const errorMessage = errorMessages[error.code] || 'Não conseguimos criar sua conta, tente novamente'
-        console.log(error)
-        Alert.alert('ERRO', errorMessage, [{text: 'OK'}])
+        Alert.alert('ATENÇÃO', 'Escolha se a sua conta será de Cliente ou Fornecedor', [{text: 'OK'}])
       }
     } else {
       setLoading(false)
@@ -78,7 +69,7 @@ export default function RegisterScreen({navigation}) {
 
   return (
     <ImageBackground source={require('../assets/bg.jpg')} className="flex-1">
-      <View className="items-center p-5 flex-1">
+      <View className="items-center p-5 flex-1" style={{padding: 30}}>
         <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Criar conta</Text>
         <Text className="w-full text-base text-center">Crie a sua conta para economizar tempo sem ter que levar seu carro até o lava-rápido</Text>
         <TextInput 

@@ -16,13 +16,40 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+app.get('/api/userType', (req, res) => {
+  const validate = 'select type from users where email=?'
+  const email = 'vinitbasilio@hotmail.com'
+
+  db.query(validate, [email], (err, result) => {
+    if (err) {
+      res.send(err)
+    } else {
+      res.send(result)
+    }
+  })
+})
+
 app.post('/api/register', (req, res) => {
   const email = req.body.email
   const type = req.body.type
+  const errMessages = {
+    'auth/missing-password': 'Insira uma senha',
+    'auth/weak-password': 'Senha fraca, use outra',
+    'auth/email-already-in-use': 'E-mail já cadastrado',
+    'auth/missing-email': 'Preencha um e-mail',
+    'auth/invalid-email': 'E-mail inválido',
+  }
+  
 
   const insert = 'INSERT INTO users (email, type) values (?, ?)'
   db.query(insert, [email, type], (err, result) => {
-    console.log(result)
+    if (err) {
+      const errMessage = errMessages[err.code] || err.code
+      res.status(500).send(errMessage)
+      console.log(errMessage)
+    } else {
+      res.status(200)
+    }
   })
 })
 

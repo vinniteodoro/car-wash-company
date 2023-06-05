@@ -1,7 +1,7 @@
 import {Text, TouchableOpacity, View, Alert} from 'react-native'
 import {signOut} from 'firebase/auth'
 import {auth, usersRef} from '../configs/firebase'
-import {userType} from './SignUp'
+import {userType} from './Register'
 import {useState, useEffect} from 'react'
 import {Ionicons} from '@expo/vector-icons'
 import {query, where, getDocs} from 'firebase/firestore'

@@ -1,7 +1,7 @@
 import React from 'react'
 import {NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
-import SignUp from './screens/SignUp'
+import Register from './screens/Register'
 import Login from './screens/Login'
 import Home from './screens/Home'
 import TrocaSenha from './screens/TrocaSenha'
@@ -31,7 +31,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName='Home' screenOptions={navigationOptions}>
         <Stack.Screen name='Home' component={Home} options={{headerShown: false}}/>
-        <Stack.Screen name='SignUp' component={SignUp} options={{title: 'CADASTRO'}}/>
+        <Stack.Screen name='Register' component={Register} options={{title: 'CADASTRO'}}/>
         <Stack.Screen name='Login' component={Login} options={{title: 'LOGIN'}}/>
         <Stack.Screen name='InicioTab' component={Tabs} options={{headerShown: false}}/>
         <Stack.Screen name='TrocaSenha' component={TrocaSenha} options={{title: 'TROCA DE SENHA'}}/>
