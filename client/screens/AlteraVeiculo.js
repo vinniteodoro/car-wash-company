@@ -4,7 +4,6 @@ import React, {useState, useEffect} from 'react'
 import {addDoc, updateDoc, getDocs, doc, query, where} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
 import {SelectList} from 'react-native-dropdown-select-list'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function AlteraEnderecoScreen({route, navigation}) {
   const [brand, setBrand] = useState('')
@@ -57,7 +56,7 @@ export default function AlteraEnderecoScreen({route, navigation}) {
             if (plate === doc.data().plate) {
               setLoading(false)
               exists = true
-              Toast.warn('Essa placa já está cadastrada')
+              Alert.alert('ATENÇÃO', 'Essa placa já está cadastrada', [{text: 'OK'}])
             }
           })
   
@@ -96,18 +95,17 @@ export default function AlteraEnderecoScreen({route, navigation}) {
         }
       } else {
         setLoading(false)
-        Toast.warn('Selecione uma categoria de veículo')
+        Alert.alert('ATENÇÃO', 'Selecione uma categoria de veículo', [{text: 'OK'}])
       }
       
     } catch (error) {
       setLoading(false)
-      Toast.error('Não conseguimos realizar a operação, tente novamente')
+      Alert.alert('ERRO', 'Não conseguimos realizar a operação, tente novamente', [{text: 'OK'}])
     }
   }
 
   return (
     <View className="p-5 flex-1 bg-white">
-      <ToastContainer/>
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Alterar veículo</Text>
         <View className="px-2 flex-row mt-6">
           <Text className="text-neutral-500">Marca</Text>

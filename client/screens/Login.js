@@ -7,7 +7,6 @@ import {auth,usersRef} from '../configs/firebase'
 import {updateUserType} from './SignUp'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('')
@@ -39,7 +38,7 @@ export default function LoginScreen({navigation}) {
       }
       
       const errorMessage = errorMessages[error.code] || 'Não conseguimos autenticar seu usuário, tente novamente'
-      Toast.error(errorMessage)
+      Alert.alert('ERRO', errorMessage, [{text: 'OK'}])
     }
   }
 
@@ -50,7 +49,6 @@ export default function LoginScreen({navigation}) {
   return (
     <ImageBackground source={require('../assets/bg.jpg')} className="flex-1">
       <View className="items-center flex-1 p-5">
-        <ToastContainer/>
         <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Faça o login</Text>
         <Text className="w-full text-base text-center">Bem-vindo de volta, sentimos falta de você!</Text>
         <TextInput 

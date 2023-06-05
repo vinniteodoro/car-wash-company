@@ -5,7 +5,6 @@ import React, {useState} from 'react'
 import {StackActions} from '@react-navigation/native'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function ReautenticacaoScreen({route, navigation}) {
   const user = auth.currentUser
@@ -39,7 +38,7 @@ export default function ReautenticacaoScreen({route, navigation}) {
         'auth/missing-password': 'Preencha sua senha'
       }
       const errorMessage = errorMessages[error.code] || 'Não conseguimos autenticar seu usuário, tente novamente'
-      Toast.error(errorMessage)
+      Alert.alert('ERRO', errorMessage, [{text: 'OK'}])
     }
   }
 
@@ -49,7 +48,6 @@ export default function ReautenticacaoScreen({route, navigation}) {
 
   return (
     <View className="p-5 bg-white flex-1 items-center">
-      <ToastContainer/>
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Reautenticar</Text>
       <Text className="w-full text-base text-center">Insira a sua senha para que possamos continuar</Text>
       <View className="relative w-full">

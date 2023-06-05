@@ -6,7 +6,6 @@ import React, {useState, useEffect} from 'react'
 import {query, where, getDocs, updateDoc, doc} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
 import {TextInputMask} from 'react-native-masked-text'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function AlteraCadastroScreen({navigation}) {
   const [nome, setNome] = useState('')
@@ -35,7 +34,7 @@ export default function AlteraCadastroScreen({navigation}) {
           setLoading(false)
         } else {
           setLoading(false)
-          Toast.warn('Nenhum cadastro encontrado, tente novamente')
+          Alert.alert('ATENÇÃO', 'Nenhum cadastro encontrado, tente novamente', [{text: 'OK'}])
         }
       } catch (error) {
         setLoading(false)
@@ -65,7 +64,7 @@ export default function AlteraCadastroScreen({navigation}) {
             }])
           } catch (verificationError) {
             setLoading(false)
-            Toast.error('Seu e-mail ainda não foi verificado e não conseguimos enviar o link para validá-lo. Tente novamente')
+            Alert.alert('ERRO', 'Seu e-mail ainda não foi verificado e não conseguimos enviar o link para validá-lo. Tente novamente', [{text: 'OK'}])
           }
       } else {
         if (validarCPF(cpfCnpj)) {
@@ -75,7 +74,7 @@ export default function AlteraCadastroScreen({navigation}) {
           Alert.alert('ÊXITO', 'Cadastro atualizado com sucesso', [{text: 'OK', onPress: () => navigation.navigate('Perfil', {avatarNome: nome})}])
         } else {
           setLoading(false)
-          Toast.error('CPF inválido')
+          Alert.alert('ERRO', 'CPF inválido', [{text: 'OK'}])
         }
       }
     } catch (error) {
@@ -89,7 +88,6 @@ export default function AlteraCadastroScreen({navigation}) {
 
   return (
     <View className="items-center p-5 bg-white flex-1">
-      <ToastContainer/>
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Dados pessoais</Text>
       <Text className="w-full text-base text-center">Fique à vontade para alterar seu cadastro</Text>
       <TextInput 

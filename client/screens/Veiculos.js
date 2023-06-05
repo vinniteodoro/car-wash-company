@@ -5,7 +5,6 @@ import {query, where, getDocs, doc, deleteDoc} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function VeiculosScreen({navigation}) {
   const [loading, setLoading] = useState(false)
@@ -49,13 +48,12 @@ export default function VeiculosScreen({navigation}) {
       ])
     } catch (error) {
       setLoading(false)
-      Toast.error('Não conseguimos excluir o endereço, por favor tente novamente')
+      Alert.alert('ERRO', 'Não conseguimos excluir o endereço, por favor tente novamente', [{text: 'OK'}])
     }
   }
 
   return (
     <View className="items-center p-5 flex-1 bg-white">
-      <ToastContainer/>
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Veículos</Text>
       <Text className="w-full text-base text-center">Altere ou cadastre novos veículos</Text>
       <TouchableOpacity className="h-12 bg-blue-950/90 items-center justify-center w-full mt-12" onPress={() => navigation.navigate('AlteraVeiculo')}>

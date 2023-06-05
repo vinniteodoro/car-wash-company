@@ -4,7 +4,6 @@ import {TextInput} from 'react-native'
 import {sendPasswordResetEmail} from 'firebase/auth'
 import {auth} from '../configs/firebase'
 import AppLoader from '../configs/loader'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function ResetSenha({navigation}) {
   const [email, setEmail] = useState('')
@@ -31,13 +30,12 @@ export default function ResetSenha({navigation}) {
       }
         
       const errorMessage = errorMessages[error.code] || 'Não conseguimos enviar o e-mail para reset de senha, tente novamente'
-      Toast.warn(errorMessage)
+      Alert.alert('ATENÇÃO', errorMessage, [{text: 'OK'}])
     }
   }
 
   return (
     <View className="items-center flex-1 p-5 bg-white">
-      <ToastContainer/>
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Alterar senha</Text>
       <Text className="w-full text-base text-center">Não se preocupe, a gente te ajuda a trocar sua senha ;{')'}</Text>
       <TextInput 

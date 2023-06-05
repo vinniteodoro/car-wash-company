@@ -4,7 +4,6 @@ import React, {useState, useEffect} from 'react'
 import {addDoc, updateDoc, getDocs, doc, query, where} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
 import {TextInputMask} from 'react-native-masked-text'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function AlteraEnderecoScreen({route, navigation}) {
   const [cidade, setCidade] = useState('')
@@ -45,7 +44,7 @@ export default function AlteraEnderecoScreen({route, navigation}) {
   
       if (data.erro) {
         setLoading(false)
-        Toast.warn('CPF não encontrado, tente novamente')
+        Alert.alert('ERRO', 'CPF não encontrado, tente novamente', [{text: 'OK'}])
       } else {
         setEstado(data.uf)
         setCidade(data.localidade)
@@ -121,7 +120,6 @@ export default function AlteraEnderecoScreen({route, navigation}) {
 
   return (
     <View className="p-5 flex-1 bg-white">
-      <ToastContainer/>
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Alterar endereço</Text>
       {mostrarForms ? (
         <>

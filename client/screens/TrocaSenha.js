@@ -1,10 +1,9 @@
-import {KeyboardAvoidingView, Text, TouchableOpacity, View,TextInput,Alert} from 'react-native'
+import {Text, TouchableOpacity, View,TextInput,Alert} from 'react-native'
 import {updatePassword} from 'firebase/auth'
 import {auth} from '../configs/firebase'
 import React, {useState} from 'react'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function TrocaSenhaScreen({navigation}) {
   const user = auth.currentUser
@@ -25,11 +24,11 @@ export default function TrocaSenhaScreen({navigation}) {
         Alert.alert('ÊXITO', 'Senha foi trocada com sucesso', [{text: 'OK', onPress: () => navigation.navigate('Perfil')}])
       } catch (error) {
         setLoading(false)
-        Toast.error('Não conseguimos trocar a senha, tente novamente')
+        Alert.alert('ERRO', 'Não conseguimos trocar a senha, tente novamente', [{text: 'OK'}])
       }
     } else {
       setLoading(false)
-      Toast.warn('As senhas que digitou são diferentes')
+      Alert.alert('ATENÇÃO', 'As senhas que digitou são diferentes', [{text: 'OK'}])
     }
   }
 
@@ -43,7 +42,6 @@ export default function TrocaSenhaScreen({navigation}) {
 
   return (
     <View className="p-5 bg-white flex-1 items-center">
-      <ToastContainer/>
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Trocar senha</Text>
       <Text className="w-full text-base text-center">Fique à vontade para cadastrar a sua nova senha</Text>
       <View className="relative w-full">

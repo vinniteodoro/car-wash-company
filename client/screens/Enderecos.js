@@ -5,7 +5,6 @@ import {query, where, getDocs, doc, deleteDoc} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
 import {userType} from './SignUp'
 import {Ionicons} from '@expo/vector-icons'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function EnderecosScreen({navigation}) {
   const [documents, setDocuments] = useState([])
@@ -49,13 +48,12 @@ export default function EnderecosScreen({navigation}) {
       ])
     } catch (error) {
       setLoading(false)
-      Toast.error('Não conseguimos excluir o endereço, por favor tente novamente')
+      Alert.alert('ERRO', 'Não conseguimos excluir o endereço, por favor tente novamente', [{text: 'OK'}])
     }
   }
 
   return (
     <View className="items-center p-5 flex-1 bg-white">
-      <ToastContainer/>
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Endereços</Text>
       <Text className="w-full text-base text-center">Altere ou cadastre novos endereços</Text>
       {userType==='Cliente'||documents.length===0 ? ( 

@@ -5,7 +5,6 @@ import React, {useState} from 'react'
 import {addDoc, Timestamp, query, where, getDocs} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
 import {SelectList} from 'react-native-dropdown-select-list'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function ProblemaAppScreen({navigation}) {
   const [loading, setLoading] = useState(false)
@@ -36,7 +35,7 @@ export default function ProblemaAppScreen({navigation}) {
     try {
       if (type==='') {
         setLoading(false)
-        Toast.warn('Escolha uma categoria de problemas')
+        Alert.alert('ATENÇÃO', 'Escolha uma categoria de problemas', [{text: 'OK'}])
       } else {
         const randomNumber = String(Math.floor(Math.random() * (maxCaracters + 1))).padStart(6, '0')
         const q = query(ticketsRef, where('id', '==', randomNumber))
@@ -64,13 +63,12 @@ export default function ProblemaAppScreen({navigation}) {
       }
     } catch (error) {
       setLoading(false)
-      Toast.error('Erro ao enviar o ticket, tente novamente')
+      Alert.alert('ERRO', 'Erro ao enviar o ticket, tente novamente', [{text: 'OK'}])
     }
   }
 
   return (
     <View className="items-center p-5 bg-white flex-1">
-      <ToastContainer/>
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Abrir ticket</Text>
       <Text className="w-full text-base text-center">
         Sentimos muito que a experiência com nosso aplicativo não esteja das melhores...nos conte melhor qual é o problema e retornaremos o mais rápido possível ;{')'}

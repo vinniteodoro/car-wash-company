@@ -6,7 +6,6 @@ import {useState, useEffect} from 'react'
 import {Ionicons} from '@expo/vector-icons'
 import {query, where, getDocs} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
-import ToastContainer, {Toast} from 'toastify-react-native'
 
 export default function PerfilScreen({route, navigation}) {
     const [loading, setLoading] = useState(false)
@@ -33,13 +32,12 @@ export default function PerfilScreen({route, navigation}) {
         navigation.reset({index: 0, routes: [{name: 'Home'}]})
       } catch (error) {
         setLoading(false)
-        Toast.error('Não conseguimos desconectá-lo, tente novamente')
+        Alert.alert('ERRO', 'Não conseguimos desconectá-lo, tente novamente', [{text: 'OK'}])
       }
     }
 
     return (
       <View className="p-5 bg-white flex-1">
-        <ToastContainer/>
         <View className="mt-12">
           <Text className="font-bold text-2xl ml-16 text-blue-950/90">{route.params ? route.params.avatarNome : nome}</Text>
         </View>

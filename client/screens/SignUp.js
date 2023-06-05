@@ -7,7 +7,7 @@ import {auth,usersRef} from '../configs/firebase'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
 import {SelectList} from 'react-native-dropdown-select-list'
-import ToastContainer, {Toast} from 'toastify-react-native'
+import Axios from 'axios'
 
 export var userType
 
@@ -34,18 +34,19 @@ export default function RegisterScreen({navigation}) {
 
     if (password === confirmPassword) {
       try {
-        if (type==='Cliente' || type==='Fornecedor') {
-          await createUserWithEmailAndPassword(auth, email, password)
-          await addDoc(usersRef, {email: email, userType: type, createdAt: Timestamp.now(), cpfcnpj: '', celular: '', nome: ''})
+        if (type==='Cliente'||type==='Fornecedor') {
+          await Axios.post('http://localhost:3001/api/register', {email: email, type: type})
+          //await createUserWithEmailAndPassword(auth, email, password)
+          //await addDoc(usersRef, {email: email, userType: type, createdAt: Timestamp.now(), cpfcnpj: '', celular: '', nome: ''})
           updateUserType(type)
         
-          await sendEmailVerification(auth.currentUser)
+          //await sendEmailVerification(auth.currentUser)
     
           setLoading(false)
           Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
         } else {
           setLoading(false)
-          Toast.warn('Escolha se a sua conta será de Cliente ou Fornecedor')
+          Alert.alert('ATENÇÃO', 'Escolha se a sua conta será de Cliente ou Fornecedor', [{text: 'OK'}])
         }
       } catch (error) {
         setLoading(false)
@@ -58,7 +59,8 @@ export default function RegisterScreen({navigation}) {
           'auth/invalid-email': 'E-mail inválido',
         }
         const errorMessage = errorMessages[error.code] || 'Não conseguimos criar sua conta, tente novamente'
-        Toast.error(errorMessage)
+        console.log(error)
+        Alert.alert('ERRO', errorMessage, [{text: 'OK'}])
       }
     } else {
       setLoading(false)
@@ -76,7 +78,6 @@ export default function RegisterScreen({navigation}) {
 
   return (
     <ImageBackground source={require('../assets/bg.jpg')} className="flex-1">
-      <ToastContainer/>
       <View className="items-center p-5 flex-1">
         <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Criar conta</Text>
         <Text className="w-full text-base text-center">Crie a sua conta para economizar tempo sem ter que levar seu carro até o lava-rápido</Text>
