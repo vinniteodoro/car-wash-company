@@ -1,14 +1,12 @@
 import React, {useState} from 'react'
 import {Text, TouchableOpacity, View, Alert, ImageBackground} from 'react-native'
 import {TextInput} from 'react-native'
-import {createUserWithEmailAndPassword, sendEmailVerification} from 'firebase/auth'
-import {addDoc, Timestamp} from 'firebase/firestore'
-import {auth,usersRef} from '../configs/firebase'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
 import {SelectList} from 'react-native-dropdown-select-list'
 import Axios from 'axios'
 import {server} from '../configs/server'
+import {userPool} from '../configs/cognito'
 
 export var userType
 
@@ -34,24 +32,47 @@ export default function RegisterScreen({navigation}) {
     setLoading(true)
 
     if (password === confirmPassword) {
-      try {
-        const resp = await Axios.post('http://'+server+'/api/register', {email: email, type: type})
-        //await createUserWithEmailAndPassword(auth, email, password)
-        //await sendEmailVerification(auth.currentUser)
+      if (type=='') {
         setLoading(false)
-        updateUserType(type)
-        console.log(resp.data)
-        Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK'}])
-        //Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
-      } catch (error) {
-        setLoading(false)
-        console.log(error.response.data)
-        Alert.alert('ERRO', error, [{text: 'OK'}])
+        Alert.alert('ERRO', 'Escolha uma das opções', [{text: 'OK'}])
+      } else {
+        try {
+          await new Promise((resolve, reject) => {
+            userPool.signUp(email, password, [], null, function (err) {
+              if (err) {
+                reject(err)
+              } else {
+                resolve()
+              }
+            })
+          })
+          const resp = await Axios.post('http://' + server + '/api/register', {email: email, type: type})
+          setLoading(false)
+          updateUserType(type)
+          Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK'}])
+          //Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
+        } catch (error) {
+          setLoading(false)
+          if ((error.message.toLowerCase()).includes('password')) {
+            Alert.alert('ERRO', 'Senha inválida.\nEla deve ter no mínimo 6 caracteres, um número, uma letra e maiúscula e outra letra minúscula', [{text: 'OK'}])
+          } else if ((error.message.toLowerCase()).includes('username should be an email')) {
+            Alert.alert('ERRO', 'E-mail inválido', [{text: 'OK'}])
+          } else if ((error.message.toLowerCase()).includes('given email already exists')) {
+            Alert.alert('ERRO', 'E-mail já cadastrado', [{text: 'OK'}])
+          } else if ((error.message.toLowerCase()).includes("'username' failed to satisfy constraint")) {
+            Alert.alert('ERRO', 'E-mail inválido', [{text: 'OK'}])
+          } else {
+            if (error.response && error.response.status===500) {
+              Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
+            } else {
+              Alert.alert('ERRO', error.message, [{text: 'OK'}])
+            }
+          }
+        }
       }
     } else {
       setLoading(false)
-      console.log('As senhas que digitou são diferentes')
-      Alert.alert('ERRO', 'As senhas que digitou são diferentes', [{text: 'OK'}])
+      Alert.alert('ERRO', 'As senhas não são iguais', [{text: 'OK'}])
     }
   }
 

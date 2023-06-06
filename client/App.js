@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator()
 const navigationOptions = {
   headerTransparent: true,
   headerTitleAlign: 'center',
-  headerTintColor: 'rgb(30, 58, 138)',
+  headerTintColor: 'rgba(23, 37, 84, .9)',
   headerTitleStyle: {color: 'black', fontSize: 12}
 }
 

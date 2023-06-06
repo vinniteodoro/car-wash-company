@@ -14,10 +14,9 @@ export default function HomeScreen({navigation}) {
       <View className="items-center flex-1 justify-center p-10">
         <View className="relative"> 
           <Image source={require('../assets/logo.png')} style={{width: 200, height: 200, resizeMode: 'contain'}}/>
-          
           <View className="absolute bottom-3">
             <View className="justify-center">
-              <Text className="text-sm text-center">    Lave seu carro sem sair do lugar</Text>
+              <Text className="text-sm text-center">Lave seu carro sem sair do lugar</Text>
             </View>
           </View>
         </View>

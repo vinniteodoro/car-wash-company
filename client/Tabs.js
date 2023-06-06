@@ -18,7 +18,7 @@ export default function Tabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({color, size, focused}) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={focused ? 'rgb(30, 58, 138)' : color}/>
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={focused ? 'rgba(23, 37, 84, .9)' : color}/>
           ),
           tabBarLabelStyle: {
             color: 'gray',
@@ -33,7 +33,7 @@ export default function Tabs() {
             options={{
               headerShown: false,
               tabBarIcon: ({color, size, focused}) => (
-                <Ionicons name={focused ? 'search' : 'search-outline'} size={size} color={focused ? 'rgb(30, 58, 138)' : color}/>
+                <Ionicons name={focused ? 'search' : 'search-outline'} size={size} color={focused ? 'rgba(23, 37, 84, .9)' : color}/>
               ),
               tabBarLabelStyle: {
                 color: 'gray',
@@ -48,7 +48,7 @@ export default function Tabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({color, size, focused}) => (
-            <Ionicons name={focused ? 'list' : 'list-outline'} size={size} color={focused ? 'rgb(30, 58, 138)' : color}/>
+            <Ionicons name={focused ? 'list' : 'list-outline'} size={size} color={focused ? 'rgba(23, 37, 84, .9)' : color}/>
           ),
           tabBarLabelStyle: {
             color: 'gray',
@@ -62,7 +62,7 @@ export default function Tabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({color, size, focused}) => (
-            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={focused ? 'rgb(30, 58, 138)' : color}/>
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={focused ? 'rgba(23, 37, 84, .9)' : color}/>
           ),
           tabBarLabelStyle: {
             color: 'gray',
