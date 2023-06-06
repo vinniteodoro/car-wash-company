@@ -49,12 +49,14 @@ export default function RegisterScreen({navigation}) {
           const resp = await Axios.post('http://' + server + '/api/register', {email: email, type: type})
           setLoading(false)
           updateUserType(type)
-          Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK'}])
-          //Alert.alert('ÊXITO', 'Conta criada com sucesso', [{text: 'OK', onPress: () => navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})}])
+          Alert.alert('ÊXITO', 'Conta criada com sucesso\nVerifique o código que enviamos no seu e-mail', [{
+            text: 'OK', 
+            onPress: () => navigation.reset({index: 1, routes: [{name: 'Home'}, {name: 'ValidationCode', params: {email: email}}]})}
+          ])
         } catch (error) {
           setLoading(false)
           if ((error.message.toLowerCase()).includes('password')) {
-            Alert.alert('ERRO', 'Senha inválida.\nEla deve ter no mínimo 6 caracteres, um número, uma letra e maiúscula e outra letra minúscula', [{text: 'OK'}])
+            Alert.alert('ERRO', 'Senha inválida\nEla deve ter no mínimo 6 caracteres, um número, uma letra e maiúscula e outra letra minúscula', [{text: 'OK'}])
           } else if ((error.message.toLowerCase()).includes('username should be an email')) {
             Alert.alert('ERRO', 'E-mail inválido', [{text: 'OK'}])
           } else if ((error.message.toLowerCase()).includes('given email already exists')) {
@@ -86,9 +88,9 @@ export default function RegisterScreen({navigation}) {
 
   return (
     <ImageBackground source={require('../assets/bg.jpg')} className="flex-1">
-      <View className="items-center p-5 flex-1" style={{padding: 30}}>
+      <View className="items-center p-5 flex-1">
         <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Criar conta</Text>
-        <Text className="w-full text-base text-center">Crie a sua conta para economizar tempo sem ter que levar seu carro até o lava-rápido</Text>
+        <Text className="w-full text-base text-center">Economize tempo sem ter que levar seu carro até o lava-rápido</Text>
         <TextInput 
           className="w-full h-14 rounded-md text-xl bg-gray-500/10 focus:border-blue-950/90 focus:border-2 mt-12 pl-2" 
           placeholder='E-mail' 
