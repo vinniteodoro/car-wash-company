@@ -1,7 +1,7 @@
 import {Text, TextInput, TouchableOpacity, View, Alert} from 'react-native'
 import {auth, usersRef, db} from '../configs/firebase'
 import {sendEmailVerification} from 'firebase/auth'
-import {userType} from './Register'
+import {userType} from './Login'
 import React, {useState, useEffect} from 'react'
 import {query, where, getDocs, updateDoc, doc} from 'firebase/firestore'
 import AppLoader from '../configs/loader'

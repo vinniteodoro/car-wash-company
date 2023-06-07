@@ -1,44 +1,60 @@
 import React, {useState} from 'react'
 import {Text, TouchableOpacity, View, Alert, ImageBackground} from 'react-native'
 import {TextInput} from 'react-native'
-import {signInWithEmailAndPassword} from 'firebase/auth'
-import {query, where, getDocs} from 'firebase/firestore'
-import {auth,usersRef} from '../configs/firebase'
-import {updateUserType} from './Register'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
+import {userPool} from '../configs/cognito'
+import Axios from 'axios'
+import {server} from '../configs/server'
+import {AuthenticationDetails, CognitoUser} from 'amazon-cognito-identity-js'
+
+export var userType
+
+export function updateUserType(newType) {
+  userType = newType
+}
 
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [type, setType] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const authDetails = new AuthenticationDetails({Username: email, Password: password})
+  const cognitoUser = new CognitoUser({Username: email, Pool: userPool})
 
   const handleLogin = async () => {
     setLoading(true)
   
     try {
-      await signInWithEmailAndPassword(auth, email, password)
-  
-      const q = query(usersRef, where('email', '==', auth.currentUser.email))
-      const querySnapshot = await getDocs(q)
-  
-      updateUserType(querySnapshot.docs[0].data().userType)
+      await new Promise((resolve, reject) => {
+        cognitoUser.authenticateUser(authDetails, {
+          onSuccess: () => {
+            resolve()
+          },
+          onFailure: (err) => {
+            reject(err)
+          }
+        })
+      })
+      const resp = await Axios.post('http://' + server + '/api/userType', {email: email})
+      updateUserType(resp.data.userType)
       setLoading(false)
       navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
     } catch (error) {
       setLoading(false)
-  
-      const errorMessages = {
-        'auth/wrong-password': 'Senha incorreta',
-        'auth/user-not-found': 'E-mail não cadastrado',
-        'auth/invalid-email': 'E-mail inválido',
-        'auth/missing-password': 'Insira uma senha',
-        'auth/missing-email': 'Preencha um e-mail'
+      console.log(error)
+      if ((error.message.toLowerCase()).includes('incorrect username or password')) {
+        Alert.alert('ERRO', 'E-mail ou senha incorretos', [{text: 'OK'}])
+      } else if ((error.message.toLowerCase()).includes('missing required parameter username')) {
+        Alert.alert('ERRO', 'Preencha o e-mail', [{text: 'OK'}])
+      } else {
+        if (error.response) {
+          Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
+        } else {
+          Alert.alert('ERRO', 'Falha no login, tente novamente', [{text: 'OK'}])
+        }
       }
-      
-      const errorMessage = errorMessages[error.code] || 'Não conseguimos autenticar seu usuário, tente novamente'
-      Alert.alert('ERRO', errorMessage, [{text: 'OK'}])
     }
   }
 

@@ -3,7 +3,7 @@ import {auth, userAddressRef, db} from '../configs/firebase'
 import React, {useState, useEffect} from 'react'
 import {query, where, getDocs, doc, deleteDoc} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
-import {userType} from './Register'
+import {userType} from './Login'
 import {Ionicons} from '@expo/vector-icons'
 
 export default function EnderecosScreen({navigation}) {

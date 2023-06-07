@@ -8,12 +8,6 @@ import Axios from 'axios'
 import {server} from '../configs/server'
 import {userPool} from '../configs/cognito'
 
-export var userType
-
-export function updateUserType(newType) {
-  userType = newType
-}
-
 const options = [
   {value: 'Cliente', label: 'Cliente'},
   {value: 'Parceiro', label: 'Parceiro'}
@@ -48,10 +42,9 @@ export default function RegisterScreen({navigation}) {
           })
           const resp = await Axios.post('http://' + server + '/api/register', {email: email, type: type})
           setLoading(false)
-          updateUserType(type)
           Alert.alert('ÊXITO', 'Conta criada com sucesso\nVerifique o código que enviamos no seu e-mail', [{
             text: 'OK', 
-            onPress: () => navigation.reset({index: 1, routes: [{name: 'Home'}, {name: 'ValidationCode', params: {email: email}}]})}
+            onPress: () => navigation.reset({index: 1, routes: [{name: 'Login'}, {name: 'ValidationCode', params: {email: email}}]})}
           ])
         } catch (error) {
           setLoading(false)

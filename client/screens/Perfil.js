@@ -1,10 +1,7 @@
 import {Text, TouchableOpacity, View, Alert} from 'react-native'
-import {signOut} from 'firebase/auth'
-import {auth, usersRef} from '../configs/firebase'
-import {userType} from './Register'
+import {userType} from './Login'
 import {useState, useEffect} from 'react'
 import {Ionicons} from '@expo/vector-icons'
-import {query, where, getDocs} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
 
 export default function PerfilScreen({route, navigation}) {
@@ -95,7 +92,7 @@ export default function PerfilScreen({route, navigation}) {
               <Ionicons name="chevron-forward" size={24} color={'rgb(30, 58, 138)'}/>
             </View>
           </TouchableOpacity>
-          {userType === 'Fornecedor' && (
+          {userType === 'Parceiro' && (
             <TouchableOpacity className="flex-row border-t border-b border-gray-100 py-2" onPress={() => navigation.navigate('CadastraServico')}>
               <View className="mt-2">
                 <Ionicons name="receipt-outline" size={24}/>
@@ -114,8 +111,8 @@ export default function PerfilScreen({route, navigation}) {
               <Ionicons name="card-outline" size={24}/>
             </View>
             <View className="ml-6">
-              <Text className="text-xl">{userType === 'Fornecedor' ? 'Recebimentos' : 'Pagamentos'}</Text>
-              <Text className="text-slate-500">{userType === 'Fornecedor' ? 'Recebimentos' : 'Alterar meios de pagamento'}</Text>
+              <Text className="text-xl">{userType === 'Parceiro' ? 'Recebimentos' : 'Pagamentos'}</Text>
+              <Text className="text-slate-500">{userType === 'Parceiro' ? 'Recebimentos' : 'Alterar meios de pagamento'}</Text>
             </View>
             <View className="absolute right-0 mt-2 top-2">
               <Ionicons name="chevron-forward" size={24} color={'rgb(30, 58, 138)'}/>

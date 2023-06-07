@@ -10,8 +10,7 @@ export default function ValidationCodeScreen({route, navigation}) {
   const inputRefs = useRef([])
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
-  const userData = {Username: email, Pool: userPool}
-  const cognitoUser = new CognitoUser(userData)
+  const cognitoUser = new CognitoUser({Username: email, Pool: userPool})
 
   useEffect(() => {
     setEmail(route.params.email)
@@ -22,8 +21,9 @@ export default function ValidationCodeScreen({route, navigation}) {
     updatedCode[index] = value
     setCode(updatedCode)
 
-    if (index<5 && value!=='') {
-      inputRefs.current[index + 1]?.focus()
+    if (index < 5 && value !== '') {
+      const nextIndex = index + 1
+      inputRefs.current[nextIndex]?.focus()
     }
   }
 

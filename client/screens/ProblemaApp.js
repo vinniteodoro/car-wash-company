@@ -1,6 +1,6 @@
 import {Text, TextInput, TouchableOpacity, View, Alert} from 'react-native'
 import {auth, ticketsRef} from '../configs/firebase'
-import {userType} from './Register'
+import {userType} from './Login'
 import React, {useState} from 'react'
 import {addDoc, Timestamp, query, where, getDocs} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
@@ -19,7 +19,7 @@ export default function ProblemaAppScreen({navigation}) {
     {label: 'Busca', value: 'Busca'},
     {label: 'Alteração de cadastro', value: 'Alteração de cadastro'},
     {label: 'Alteração de endereço', value: 'Alteração de endereço'},
-    userType === 'Fornecedor' ? ({label: 'Cadastro de serviço', value: 'Cadastro de serviço'}) : ({label: 'Cadastro de veículos', value: 'Cadastro de veículos'}),
+    userType === 'Parceiro' ? ({label: 'Cadastro de serviço', value: 'Cadastro de serviço'}) : ({label: 'Cadastro de veículos', value: 'Cadastro de veículos'}),
     {label: 'Login', value: 'Login'},
     {label: 'Logout', value: 'Logout'},
     {label: 'Reautenticação', value: 'Reautenticação'},

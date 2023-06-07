@@ -16,14 +16,19 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
-app.get('/api/userType', (req, res) => {
-  const email = 'vinitbasilio@hotmail.com'
+app.post('/api/userType', (req, response) => {
+  const email = req.body.email
 
-  db.query('select type from users where email=?', [email], (err, result) => {
+  db.query('select type from users where email=?', [email], (err, res) => {
     if (err) {
-      res.send(err)
+      res.status(500).send('Falha ao conectar com o servidor, tente novamente')
     } else {
-      res.send(result)
+      if (res.length > 0) {
+        const userType = res[0].type
+        response.status(200).send({userType})
+      } else {
+        response.status(404).send('Usuário não encontrado')
+      }
     }
   })
 })

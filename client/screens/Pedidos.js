@@ -1,5 +1,5 @@
 import {KeyboardAvoidingView, Text, TouchableOpacity, View} from 'react-native'
-import {userType} from './Register'
+import {userType} from './Login'
 import {useState} from 'react'
 
 export default function PedidoScreen({navigation}) {
