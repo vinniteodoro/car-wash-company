@@ -1,13 +1,17 @@
 import {Text, TouchableOpacity, View, Image, ImageBackground} from 'react-native'
-import {auth} from '../configs/firebase'
-import React, {useEffect} from 'react'
+import React from 'react'
+import {userPool} from '../configs/cognito'
+import {useFocusEffect} from '@react-navigation/native'
 
 export default function HomeScreen({navigation}) {
-  useEffect(() => {
-    if (auth.currentUser) {
-      navigation.reset({index: 0, routes: [{name: 'Inicio'}]})
-    }
+  useFocusEffect(
+    React.useCallback(() => {
+      const user = userPool.getCurrentUser()
+      if (user) {
+        navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
+      }
   }, [])
+  )
 
   return (
     <ImageBackground source={require('../assets/bg.jpg')} className="flex-1">

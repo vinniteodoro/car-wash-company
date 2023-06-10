@@ -16,6 +16,24 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+app.post('/api/name', (req, response) => {
+  const email = req.body.email
+
+  db.query('select name from users where email=?', [email], (err, res) => {
+    if (err) {
+      res.status(500).send('Falha ao conectar com o servidor, tente novamente')
+      console.log(err)
+    } else {
+      if (res.length > 0) {
+        const userName = res[0].name
+        response.status(200).send({userName})
+      } else {
+        response.status(404).send('Usuário não encontrado')
+      }
+    }
+  })
+})
+
 app.post('/api/userType', (req, response) => {
   const email = req.body.email
 

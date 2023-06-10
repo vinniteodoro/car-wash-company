@@ -1,33 +1,43 @@
 import {Text, TouchableOpacity, View, Alert} from 'react-native'
-import {userType} from './Login'
-import {useState, useEffect} from 'react'
+import {userType, userEmail} from './Login'
+import React, {useState} from 'react'
 import {Ionicons} from '@expo/vector-icons'
 import AppLoader from '../configs/loader'
+import Axios from 'axios'
+import {server} from '../configs/server'
+import {userPool} from '../configs/cognito'
+import {useFocusEffect} from '@react-navigation/native'
 
 export default function PerfilScreen({route, navigation}) {
     const [loading, setLoading] = useState(false)
-    const [nome, setNome] = useState('')
+    const [name, setName] = useState('')
+    user = userPool.getCurrentUser()
 
-    useEffect(() => {
-      const fetchData = async () => {
-        try {
-          const querySnapshot = await getDocs(query(usersRef, where('email', '==', auth.currentUser.email)))
-          setNome(querySnapshot.docs[0].data().nome)
-        } catch {
-          setNome(null)
+    useFocusEffect(
+      React.useCallback(() => {
+        const fetchData = async () => {
+          try {
+            const resp = await Axios.post('http://' + server + '/api/name', {email: userEmail})
+            setName(resp.data.userName)
+          } catch (error) {
+            setName(null)
+          }
         }
-      }
-      fetchData()
-    }, [])
+        fetchData()
+    
+        return () => {
+        }
+      }, [])
+    )
 
     const handleLogout = async () => {
       setLoading(true)
 
-      try {
-        await signOut(auth)
+      if (user) {
+        user.signOut()
         setLoading(false)
         navigation.reset({index: 0, routes: [{name: 'Home'}]})
-      } catch (error) {
+      } else {
         setLoading(false)
         Alert.alert('ERRO', 'Não conseguimos desconectá-lo, tente novamente', [{text: 'OK'}])
       }
@@ -36,7 +46,7 @@ export default function PerfilScreen({route, navigation}) {
     return (
       <View className="p-5 bg-white flex-1">
         <View className="mt-12">
-          <Text className="font-bold text-2xl ml-16 text-blue-950/90">{route.params ? route.params.avatarNome : nome}</Text>
+          <Text className="font-bold text-2xl ml-16 text-blue-950/90">{name}</Text>
         </View>
         <View className="py-6">
           {userType === 'Cliente' && (

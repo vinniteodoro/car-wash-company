@@ -9,15 +9,11 @@ import {server} from '../configs/server'
 import {AuthenticationDetails, CognitoUser} from 'amazon-cognito-identity-js'
 
 export var userType
-
-export function updateUserType(newType) {
-  userType = newType
-}
+export var userEmail
 
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [type, setType] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const authDetails = new AuthenticationDetails({Username: email, Password: password})
@@ -29,7 +25,7 @@ export default function LoginScreen({navigation}) {
     try {
       await new Promise((resolve, reject) => {
         cognitoUser.authenticateUser(authDetails, {
-          onSuccess: () => {
+          onSuccess: () => {    
             resolve()
           },
           onFailure: (err) => {
@@ -38,7 +34,8 @@ export default function LoginScreen({navigation}) {
         })
       })
       const resp = await Axios.post('http://' + server + '/api/userType', {email: email})
-      updateUserType(resp.data.userType)
+      userType = resp.data.userType
+      userEmail = email
       setLoading(false)
       navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
     } catch (error) {
