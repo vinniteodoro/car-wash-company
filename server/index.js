@@ -3,7 +3,7 @@ const app = express()
 const mysql = require('mysql')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const {CognitoUserPool, CognitoUserAttribute, CognitoUser, AuthenticationDetails} = require('amazon-cognito-identity-js')
+const {CognitoUserPool, CognitoUser, AuthenticationDetails} = require('amazon-cognito-identity-js')
 
 const db = mysql.createPool({
   host: process.env.MYSQL_HOST,
@@ -19,6 +19,7 @@ const poolData = {
 }
 
 const userPool = new CognitoUserPool(poolData)
+var cognitoUser
 
 app.use(cors())
 app.use(express.json())
@@ -41,10 +42,35 @@ app.post('/api/name', (req, res) => {
   })
 })
 
-app.post('/api/Login', (req, res) => {
+app.post('/api/isLogged', (req, res) => {
+  if (cognitoUser && cognitoUser.getSignInUserSession()) {
+    const accessToken = cognitoUser.getSignInUserSession().getAccessToken()
+
+    if (accessToken && accessToken.getJwtToken()) {
+      res.status(200).send(true)
+    } else {
+      res.status(200).send(false)
+    }
+  } else {
+    res.status(200).send(false)
+  }
+})
+
+app.post('/api/logout', (req, res) => {
+  cognitoUser.signOut((error) => {
+    if (error) {
+      console.error(error.message)
+      res.status(500).send('Falha ao sair da conta, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/login', (req, res) => {
   const {email, password} = req.body
   const userData = {Username: email, Pool: userPool}
-  const cognitoUser = new CognitoUser(userData)
+  cognitoUser = new CognitoUser(userData)
   const authData = {Username: email, Password: password}
   const authDetails = new AuthenticationDetails(authData)
 
@@ -78,9 +104,9 @@ app.post('/api/Login', (req, res) => {
 app.post('/api/confirmRegistration', (req, res) => {
   const {email, code} = req.body
   const userData = {Username: email, Pool: userPool}
-  const cognitoUser = new CognitoUser(userData)
+  const user = new CognitoUser(userData)
 
-  cognitoUser.confirmRegistration(code, true, (error) => {
+  user.confirmRegistration(code, true, (error) => {
     if (error) {
       if ((error.message.toLowerCase()).includes('invalid verification code provided')) {
         res.status(400).send('Código inválido')
@@ -96,9 +122,9 @@ app.post('/api/confirmRegistration', (req, res) => {
 app.post('/api/resendConfirmCode', (req, res) => {
   const email = req.body.email
   const userData = {Username: email, Pool: userPool}
-  const cognitoUser = new CognitoUser(userData)
+  const user = new CognitoUser(userData)
 
-  cognitoUser.resendConfirmationCode((error) => {
+  user.resendConfirmationCode((error) => {
     if (error) {
       res.status(400).send('Falha ao reenviar o código, tente novamente')
     } else {

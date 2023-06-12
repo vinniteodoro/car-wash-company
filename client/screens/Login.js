@@ -19,7 +19,7 @@ export default function LoginScreen({navigation}) {
     setLoading(true)
 
     try {
-      const resp = await Axios.post('http://' + server + '/api/Login', {email: email, password: password})
+      const resp = await Axios.post('http://' + server + '/api/login', {email: email, password: password})
       userType = resp.data.userType
       userEmail = email
       setLoading(false)

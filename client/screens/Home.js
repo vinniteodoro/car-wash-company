@@ -1,14 +1,20 @@
 import {Text, TouchableOpacity, View, Image, ImageBackground} from 'react-native'
 import React from 'react'
 import {useFocusEffect} from '@react-navigation/native'
+import Axios from 'axios'
+import {server} from '../configs/server'
 
 export default function HomeScreen({navigation}) {
   useFocusEffect(
     React.useCallback(() => {
-      //const user = userPool.getCurrentUser()
-      /*if (user) {
-        navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
-      }*/
+      async function fetchData() {
+        const resp = await Axios.post('http://' + server + '/api/isLogged')
+        console.log(resp.data)
+        if (resp.data === true) {
+          navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
+        }
+      }
+      fetchData()
   }, [])
   )
 

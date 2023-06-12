@@ -10,7 +10,6 @@ import {useFocusEffect} from '@react-navigation/native'
 export default function PerfilScreen({navigation}) {
     const [loading, setLoading] = useState(false)
     const [name, setName] = useState('')
-    //const user = userPool.getCurrentUser()
 
     useFocusEffect(
       React.useCallback(() => {
@@ -29,15 +28,15 @@ export default function PerfilScreen({navigation}) {
     const handleLogout = async () => {
       setLoading(true)
 
-      if (user) {
-        user.signOut()
+      try {
+        await Axios.post('http://' + server + '/api/logout')
         setLoading(false)
         navigation.reset({index: 0, routes: [{name: 'Home'}]})
-      } else {
+      } catch (error) {
         setLoading(false)
-        Alert.alert('ERRO', 'Não conseguimos desconectá-lo, tente novamente', [{text: 'OK'}])
-      }
-    }
+        Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
+      }  
+    } 
 
     return (
       <View className="p-5 bg-white flex-1">
