@@ -8,49 +8,25 @@ import {server} from '../configs/server'
 
 export var userType
 export var userEmail
-export var user
 
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  //const authDetails = new AuthenticationDetails({Username: email, Password: password})
-  //user = new CognitoUser({Username: email, Pool: userPool})
 
   const handleLogin = async () => {
     setLoading(true)
 
     try {
-      await new Promise((resolve, reject) => {
-        user.authenticateUser(authDetails, {
-          onSuccess: () => {    
-            resolve()
-          },
-          onFailure: (err) => {
-            reject(err)
-          }
-        })
-      })
-      const resp = await Axios.post('http://' + server + '/api/userType', {email: email})
+      const resp = await Axios.post('http://' + server + '/api/Login', {email: email, password: password})
       userType = resp.data.userType
       userEmail = email
       setLoading(false)
       navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
     } catch (error) {
       setLoading(false)
-
-      if ((error.message.toLowerCase()).includes('incorrect username or password')) {
-        Alert.alert('ERRO', 'E-mail ou senha incorretos', [{text: 'OK'}])
-      } else if ((error.message.toLowerCase()).includes('missing required parameter username')) {
-        Alert.alert('ERRO', 'Preencha o e-mail', [{text: 'OK'}])
-      } else {
-        if (error.response && error.response.status===500) {
-          Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
-        } else {
-          Alert.alert('ERRO', error.message, [{text: 'OK'}])
-        }
-      }
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
     }
   }
 

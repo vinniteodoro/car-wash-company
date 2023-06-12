@@ -3,7 +3,7 @@ const app = express()
 const mysql = require('mysql')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const {CognitoUserPool, CognitoUserAttribute, CognitoUser} = require('amazon-cognito-identity-js')
+const {CognitoUserPool, CognitoUserAttribute, CognitoUser, AuthenticationDetails} = require('amazon-cognito-identity-js')
 
 const db = mysql.createPool({
   host: process.env.MYSQL_HOST,
@@ -24,36 +24,52 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
-app.post('/api/name', (req, response) => {
+app.post('/api/name', (req, res) => {
   const email = req.body.email
 
-  db.query('select name from users where email=?', [email], (err, res) => {
-    if (err) {
+  db.query('select name from users where email=?', [email], (error, result) => {
+    if (error) {
       res.status(500).send('Falha ao conectar com o servidor, tente novamente')
-      console.log(err)
     } else {
-      if (res.length > 0) {
-        const userName = res[0].name
-        response.status(200).send({userName})
+      if (result.length > 0) {
+        const userName = result[0].name
+        res.status(200).send({userName})
       } else {
-        response.status(404).send('Usuário não encontrado')
+        res.status(400).send('Usuário não encontrado')
       }
     }
   })
 })
 
-app.post('/api/userType', (req, response) => {
-  const email = req.body.email
+app.post('/api/Login', (req, res) => {
+  const {email, password} = req.body
+  const userData = {Username: email, Pool: userPool}
+  const cognitoUser = new CognitoUser(userData)
+  const authData = {Username: email, Password: password}
+  const authDetails = new AuthenticationDetails(authData)
 
-  db.query('select type from users where email=?', [email], (err, res) => {
-    if (err) {
-      res.status(500).send('Falha ao conectar com o servidor, tente novamente')
-    } else {
-      if (res.length > 0) {
-        const userType = res[0].type
-        response.status(200).send({userType})
+  cognitoUser.authenticateUser(authDetails, {
+    onSuccess: function() {
+      db.query('select type from users where email=?', [email], (err, result) => {
+        if (err) {
+          res.status(500).send('Falha ao conectar com o servidor, tente novamente')
+        } else {
+          if (result.length > 0) {
+            const userType = result[0].type
+            res.status(200).send({userType})
+          } else {
+            res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+          }
+        }
+      })
+    },
+    onFailure: function(error) {
+      if ((error.message.toLowerCase()).includes('incorrect username or password')) {
+        res.status(400).send('E-mail ou senha incorretos')
+      } else if ((error.message.toLowerCase()).includes('missing required parameter username')) {
+        res.status(400).send('Preencha o email')
       } else {
-        response.status(404).send('Usuário não encontrado')
+        res.status(500).send('Falha ao realizar login, tente novamente')
       }
     }
   })
