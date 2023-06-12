@@ -5,13 +5,12 @@ import {Ionicons} from '@expo/vector-icons'
 import AppLoader from '../configs/loader'
 import Axios from 'axios'
 import {server} from '../configs/server'
-import {userPool} from '../configs/cognito'
 import {useFocusEffect} from '@react-navigation/native'
 
-export default function PerfilScreen({route, navigation}) {
+export default function PerfilScreen({navigation}) {
     const [loading, setLoading] = useState(false)
     const [name, setName] = useState('')
-    user = userPool.getCurrentUser()
+    //const user = userPool.getCurrentUser()
 
     useFocusEffect(
       React.useCallback(() => {
@@ -24,9 +23,6 @@ export default function PerfilScreen({route, navigation}) {
           }
         }
         fetchData()
-    
-        return () => {
-        }
       }, [])
     )
 

@@ -1,25 +1,32 @@
 import {Text, TouchableOpacity, View, TextInput, Alert} from 'react-native'
-import {EmailAuthProvider, reauthenticateWithCredential} from 'firebase/auth'
-import {auth} from '../configs/firebase'
 import React, {useState} from 'react'
 import {StackActions} from '@react-navigation/native'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
+import {userEmail} from './Login'
 
 export default function ReautenticacaoScreen({route, navigation}) {
-  const user = auth.currentUser
-  const email = auth.currentUser.email
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const page = route.params
   const [showPassword, setShowPassword] = useState(false)
+  //const authDetails = new AuthenticationDetails({Username: userEmail, Password: password})
+  //const user = userPool.getCurrentUser()
     
   const handleReautenticacao = async () => {
     setLoading(true)
-    const credential = EmailAuthProvider.credential(email, password)
   
     try {
-      await reauthenticateWithCredential(user, credential)
+      await new Promise((resolve, reject) => {
+        user.authenticateUser(authDetails, {
+          onSuccess: () => {   
+            resolve()
+          },
+          onFailure: (err) => {
+            reject(err)
+          }
+        })
+      })
       setLoading(false)
 
       const routes = {
@@ -28,17 +35,16 @@ export default function ReautenticacaoScreen({route, navigation}) {
         Enderecos: 'Enderecos',
         Veiculos: 'Veiculos'
       }
-    
-      navigation.dispatch(StackActions.replace(routes[page.page]))
+      navigation.dispatch(StackActions.replace(routes[page.page], {oldPassword: password}))
     } catch (error) {
       setLoading(false)
 
-      const errorMessages = {
-        'auth/wrong-password': 'Senha incorreta',
-        'auth/missing-password': 'Preencha sua senha'
+      if ((error.message.toLowerCase()).includes('incorrect username or password')) {
+        Alert.alert('ERRO', 'Senha incorreta', [{text: 'OK'}])
+      } else {
+        Alert.alert('ERRO', 'Falha na reautenticação, tente novamente', [{text: 'OK'}])
+        console.error(error.message)
       }
-      const errorMessage = errorMessages[error.code] || 'Não conseguimos autenticar seu usuário, tente novamente'
-      Alert.alert('ERRO', errorMessage, [{text: 'OK'}])
     }
   }
 

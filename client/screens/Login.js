@@ -3,28 +3,27 @@ import {Text, TouchableOpacity, View, Alert, ImageBackground} from 'react-native
 import {TextInput} from 'react-native'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
-import {userPool} from '../configs/cognito'
 import Axios from 'axios'
 import {server} from '../configs/server'
-import {AuthenticationDetails, CognitoUser} from 'amazon-cognito-identity-js'
 
 export var userType
 export var userEmail
+export var user
 
 export default function LoginScreen({navigation}) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const authDetails = new AuthenticationDetails({Username: email, Password: password})
-  const cognitoUser = new CognitoUser({Username: email, Pool: userPool})
+  //const authDetails = new AuthenticationDetails({Username: email, Password: password})
+  //user = new CognitoUser({Username: email, Pool: userPool})
 
   const handleLogin = async () => {
     setLoading(true)
-  
+
     try {
       await new Promise((resolve, reject) => {
-        cognitoUser.authenticateUser(authDetails, {
+        user.authenticateUser(authDetails, {
           onSuccess: () => {    
             resolve()
           },
@@ -40,16 +39,16 @@ export default function LoginScreen({navigation}) {
       navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
     } catch (error) {
       setLoading(false)
-      console.log(error)
+
       if ((error.message.toLowerCase()).includes('incorrect username or password')) {
         Alert.alert('ERRO', 'E-mail ou senha incorretos', [{text: 'OK'}])
       } else if ((error.message.toLowerCase()).includes('missing required parameter username')) {
         Alert.alert('ERRO', 'Preencha o e-mail', [{text: 'OK'}])
       } else {
-        if (error.response) {
+        if (error.response && error.response.status===500) {
           Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
         } else {
-          Alert.alert('ERRO', 'Falha no login, tente novamente', [{text: 'OK'}])
+          Alert.alert('ERRO', error.message, [{text: 'OK'}])
         }
       }
     }

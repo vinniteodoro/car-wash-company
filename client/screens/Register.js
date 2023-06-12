@@ -6,7 +6,6 @@ import {Ionicons} from '@expo/vector-icons'
 import {SelectList} from 'react-native-dropdown-select-list'
 import Axios from 'axios'
 import {server} from '../configs/server'
-import {userPool} from '../configs/cognito'
 
 const options = [
   {value: 'Cliente', label: 'Cliente'},
@@ -25,49 +24,16 @@ export default function RegisterScreen({navigation}) {
   const handleSignUp = async () => {
     setLoading(true)
 
-    if (password === confirmPassword) {
-      if (type=='') {
-        setLoading(false)
-        Alert.alert('ERRO', 'Escolha uma das opções', [{text: 'OK'}])
-      } else {
-        try {
-          await new Promise((resolve, reject) => {
-            userPool.signUp(email, password, [], null, function (err) {
-              if (err) {
-                reject(err)
-              } else {
-                resolve()
-              }
-            })
-          })
-          const resp = await Axios.post('http://' + server + '/api/register', {email: email, type: type})
-          setLoading(false)
-          Alert.alert('ÊXITO', 'Conta criada com sucesso\nVerifique o código que enviamos no seu e-mail', [{
-            text: 'OK', 
-            onPress: () => navigation.reset({index: 1, routes: [{name: 'Login'}, {name: 'ValidationCode', params: {email: email}}]})}
-          ])
-        } catch (error) {
-          setLoading(false)
-          if ((error.message.toLowerCase()).includes('password')) {
-            Alert.alert('ERRO', 'Senha inválida\nEla deve ter no mínimo 6 caracteres, um número, uma letra e maiúscula e outra letra minúscula', [{text: 'OK'}])
-          } else if ((error.message.toLowerCase()).includes('username should be an email')) {
-            Alert.alert('ERRO', 'E-mail inválido', [{text: 'OK'}])
-          } else if ((error.message.toLowerCase()).includes('given email already exists')) {
-            Alert.alert('ERRO', 'E-mail já cadastrado', [{text: 'OK'}])
-          } else if ((error.message.toLowerCase()).includes("'username' failed to satisfy constraint")) {
-            Alert.alert('ERRO', 'E-mail inválido', [{text: 'OK'}])
-          } else {
-            if (error.response && error.response.status===500) {
-              Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
-            } else {
-              Alert.alert('ERRO', error.message, [{text: 'OK'}])
-            }
-          }
-        }
-      }
-    } else {
+    try {
+      await Axios.post('http://' + server + '/api/register', {email: email, password: password, confirmPassword: confirmPassword, type: type})
       setLoading(false)
-      Alert.alert('ERRO', 'As senhas não são iguais', [{text: 'OK'}])
+      Alert.alert('ÊXITO', 'Conta criada com sucesso\nVerifique o código que enviamos no seu e-mail', [{
+        text: 'OK', 
+        onPress: () => navigation.reset({index: 2, routes: [{name: 'Home'}, {name: 'Login'}, {name: 'ValidationCode', params: {email: email}}]})}
+      ])
+    } catch (error) {
+      setLoading(false)
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
     }
   }
 

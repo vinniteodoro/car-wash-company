@@ -1,15 +1,14 @@
 import {Text, TouchableOpacity, View, Image, ImageBackground} from 'react-native'
 import React from 'react'
-import {userPool} from '../configs/cognito'
 import {useFocusEffect} from '@react-navigation/native'
 
 export default function HomeScreen({navigation}) {
   useFocusEffect(
     React.useCallback(() => {
-      const user = userPool.getCurrentUser()
-      if (user) {
+      //const user = userPool.getCurrentUser()
+      /*if (user) {
         navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
-      }
+      }*/
   }, [])
   )
 

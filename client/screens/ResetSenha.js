@@ -1,13 +1,13 @@
 import React, {useState} from 'react'
 import {Text, TouchableOpacity, View, Alert} from 'react-native'
 import {TextInput} from 'react-native'
-import {sendPasswordResetEmail} from 'firebase/auth'
-import {auth} from '../configs/firebase'
 import AppLoader from '../configs/loader'
+import {userEmail} from './Login'
 
 export default function ResetSenha({navigation}) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
+  //const user = userPool.getCurrentUser()
 
   const handleEsqueciSenha = async () => {
     setLoading(true)

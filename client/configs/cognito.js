@@ -1,8 +1,6 @@
-import {CognitoUserPool} from 'amazon-cognito-identity-js'
+
 
 const poolData = {
-  UserPoolId: 'us-east-1_cK8NQgIyZ',
-  ClientId: '6duo28ans74kakek9mmgumia0n'
+  UserPoolId: 'sa-east-1_O8P3VLLQ6',
+  ClientId: '42p3dha5fp5rc8a2t300fvf2ov'
 }
-
-export const userPool = new CognitoUserPool(poolData)

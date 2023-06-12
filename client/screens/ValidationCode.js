@@ -2,15 +2,14 @@ import React, {useState, useEffect, useRef} from 'react'
 import {Text, TouchableOpacity, View, Alert, ImageBackground} from 'react-native'
 import {TextInput} from 'react-native'
 import AppLoader from '../configs/loader'
-import {userPool} from '../configs/cognito'
-import {CognitoUser} from 'amazon-cognito-identity-js'
+import Axios from 'axios'
+import {server} from '../configs/server'
 
 export default function ValidationCodeScreen({route, navigation}) {
   const [code, setCode] = useState(['', '', '', '', '', ''])
   const inputRefs = useRef([])
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
-  const cognitoUser = new CognitoUser({Username: email, Pool: userPool})
 
   useEffect(() => {
     setEmail(route.params.email)
@@ -35,38 +34,31 @@ export default function ValidationCodeScreen({route, navigation}) {
     setLoading(true)
     const codeString = code.join('')
 
-    cognitoUser.confirmRegistration(codeString, true, function(err, result) {
-      if (err) {
-        if ((err.message.toLowerCase()).includes('invalid verification code provided')) {
-          setLoading(false)
-          Alert.alert('ERRO', 'Código inválido', [{text: 'OK'}])
-        } else {
-          setLoading(false)
-          Alert.alert('ERRO', err.message, [{text: 'OK'}])
-        }
-      } else {
-        setLoading(false)
-        Alert.alert(
-          'ÊXITO', 
-          'E-mail verificado', 
-          [{text: 'OK', onPress: () => navigation.reset({index: 1, routes: [{name: 'Home'}, {name: 'Login'}]})}]
-        )
-      }
-    })
+    try {
+      await Axios.post('http://' + server + '/api/confirmRegistration', {email: email, code: codeString})
+      setLoading(false)
+      Alert.alert(
+        'ÊXITO', 
+        'E-mail verificado', 
+        [{text: 'OK', onPress: () => navigation.reset({index: 1, routes: [{name: 'Home'}, {name: 'Login'}]})}]
+      )
+    } catch (error) {
+      setLoading(false)
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
+    }
   }
 
   const handleResendVerificationCode = async () => {
     setLoading(true)
 
-    cognitoUser.resendConfirmationCode(function(err, result) {
-      if (err) {
-        setLoading(false)
-        Alert.alert('ERRO', err.message, [{text: 'OK'}])
-      } else {
-        setLoading(false)
-        Alert.alert('ÊXITO', 'Código reenviado', [{text: 'OK'}])
-      }
-    })
+    try {
+      await Axios.post('http://' + server + '/api/resendConfirmCode', {email: email})
+      setLoading(false)
+      Alert.alert('ÊXITO', 'Código reenviado', [{text: 'OK'}])
+    } catch (error) {
+      setLoading(false)
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
+    }
   }
 
   return (

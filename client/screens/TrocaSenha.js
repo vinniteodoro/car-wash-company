@@ -1,29 +1,35 @@
 import {Text, TouchableOpacity, View,TextInput,Alert} from 'react-native'
-import {updatePassword} from 'firebase/auth'
-import {auth} from '../configs/firebase'
 import React, {useState} from 'react'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
 
-export default function TrocaSenhaScreen({navigation}) {
-  const user = auth.currentUser
+export default function TrocaSenhaScreen({route, navigation}) {
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  //const user = userPool.getCurrentUser()
 
   const handleTrocaSenha = async () => {
     setLoading(true)
   
     if (newPassword === confirmNewPassword) {
       try {
-        await updatePassword(user, newPassword)
-
+        await new Promise((resolve, reject) => {
+          const oldPassword = route.params.oldPassword
+          user.changePassword(oldPassword, newPassword, function(err) {
+            if (err) {
+              reject(err)
+            }
+            resolve()
+          })
+        })
         setLoading(false)
         Alert.alert('ÊXITO', 'Senha foi trocada com sucesso', [{text: 'OK', onPress: () => navigation.navigate('Perfil')}])
       } catch (error) {
         setLoading(false)
+        console.error(error.message)
         Alert.alert('ERRO', 'Não conseguimos trocar a senha, tente novamente', [{text: 'OK'}])
       }
     } else {
