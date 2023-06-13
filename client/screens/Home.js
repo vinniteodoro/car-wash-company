@@ -9,7 +9,6 @@ export default function HomeScreen({navigation}) {
     React.useCallback(() => {
       async function fetchData() {
         const resp = await Axios.post('http://' + server + '/api/isLogged')
-        console.log(resp.data)
         if (resp.data === true) {
           navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
         }

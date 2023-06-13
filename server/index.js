@@ -42,6 +42,33 @@ app.post('/api/name', (req, res) => {
   })
 })
 
+app.post('/api/changePassword', (req, res) => {
+  const {oldPassword, newPassword, confirmNewPassword} = req.body
+
+  if (newPassword === confirmNewPassword) {
+    cognitoUser.changePassword(oldPassword, newPassword, function(error) {
+      if (error) {
+        console.error(error.message)
+        if ((error.message.toLowerCase()).includes('proposedpassword')) {
+          res.status(400).send('Nova senha inválida\nEla deve ter no mínimo 6 caracteres, um número, uma letra e maiúscula e outra letra minúscula')
+        } else if ((error.message.toLowerCase()).includes('incorrect username or password')) {
+          res.status(400).send('Senha atual incorreta')
+        } else if ((error.message.toLowerCase()).includes('password not long enough')) {
+          res.status(400).send('Nova senha inválida\nEla deve ter no mínimo 6 caracteres, um número, uma letra e maiúscula e outra letra minúscula')
+        } else if ((error.message.toLowerCase()).includes('previouspassword')) {
+          res.status(400).send('Senha atual inválida')
+        } else {
+          res.status(400).send('Não conseguimos alterar sua senha, tente novamente')
+        }
+      } else {
+        res.status(200).end()
+      }
+    })
+  } else {
+    res.status(400).send('As senhas não são iguais')
+  }
+})
+
 app.post('/api/isLogged', (req, res) => {
   if (cognitoUser && cognitoUser.getSignInUserSession()) {
     const accessToken = cognitoUser.getSignInUserSession().getAccessToken()

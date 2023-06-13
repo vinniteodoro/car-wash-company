@@ -4,47 +4,32 @@ import {StackActions} from '@react-navigation/native'
 import AppLoader from '../configs/loader'
 import {Ionicons} from '@expo/vector-icons'
 import {userEmail} from './Login'
+import Axios from 'axios'
+import {server} from '../configs/server'
 
 export default function ReautenticacaoScreen({route, navigation}) {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const page = route.params
   const [showPassword, setShowPassword] = useState(false)
-  //const authDetails = new AuthenticationDetails({Username: userEmail, Password: password})
-  //const user = userPool.getCurrentUser()
+
+  const routes = {
+    TrocaSenha: 'TrocaSenha',
+    AlteraCadastro: 'AlteraCadastro',
+    Enderecos: 'Enderecos',
+    Veiculos: 'Veiculos'
+  }
     
   const handleReautenticacao = async () => {
     setLoading(true)
   
     try {
-      await new Promise((resolve, reject) => {
-        user.authenticateUser(authDetails, {
-          onSuccess: () => {   
-            resolve()
-          },
-          onFailure: (err) => {
-            reject(err)
-          }
-        })
-      })
+      await Axios.post('http://' + server + '/api/reauthenticate', {email: userEmail, password: password})
       setLoading(false)
-
-      const routes = {
-        TrocaSenha: 'TrocaSenha',
-        AlteraCadastro: 'AlteraCadastro',
-        Enderecos: 'Enderecos',
-        Veiculos: 'Veiculos'
-      }
       navigation.dispatch(StackActions.replace(routes[page.page], {oldPassword: password}))
     } catch (error) {
       setLoading(false)
-
-      if ((error.message.toLowerCase()).includes('incorrect username or password')) {
-        Alert.alert('ERRO', 'Senha incorreta', [{text: 'OK'}])
-      } else {
-        Alert.alert('ERRO', 'Falha na reautenticação, tente novamente', [{text: 'OK'}])
-        console.error(error.message)
-      }
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
     }
   }
 

@@ -137,10 +137,7 @@ export default function PerfilScreen({navigation}) {
           </TouchableOpacity>
           <TouchableOpacity 
             className="flex-row border-t border-b border-gray-100 py-2" 
-            onPress={() => Alert.alert('ATENÇÃO', 'Para realizar a troca, insira novamente sua senha', [{
-              text: 'OK', 
-              onPress: () => navigation.navigate('Reautenticacao', {page: 'TrocaSenha'})
-            }])}>
+            onPress={() => navigation.navigate('TrocaSenha')}>
             <View className="mt-2">
               <Ionicons name="lock-open-outline" size={24}/>
             </View>
