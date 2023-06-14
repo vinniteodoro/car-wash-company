@@ -2,35 +2,26 @@ import React, {useState} from 'react'
 import {Text, TouchableOpacity, View, Alert} from 'react-native'
 import {TextInput} from 'react-native'
 import AppLoader from '../configs/loader'
-import {userEmail} from './Login'
+import Axios from 'axios'
+import {server} from '../configs/server'
 
 export default function ResetSenha({navigation}) {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
-  //const user = userPool.getCurrentUser()
 
   const handleEsqueciSenha = async () => {
     setLoading(true)
   
     try {
-      await sendPasswordResetEmail(auth, email)
-
+      await Axios.post('http://' + server + '/api/resetPassword', {email: email})
       setLoading(false)
-      Alert.alert('ATENÇÃO', 'Verifique o email que mandamos para você', [{
+      Alert.alert('ÊXITO', 'Verifique o código que enviamos no seu e-mail', [{
         text: 'OK', 
-        onPress: () => navigation.reset({index: 1, routes: [{name: 'Home'}, {name: 'Login'}]})}
+        onPress: () => navigation.reset({index: 2, routes: [{name: 'Home'}, {name: 'Login'}, {name: 'ResetCode', params: {email: email}}]})}
       ])
     } catch (error) {
       setLoading(false)
-
-      const errorMessages = {
-        'auth/missing-email': 'Preencha o e-mail',
-        'auth/user-not-found': 'E-mail não cadastrado',
-        'auth/invalid-email': 'E-mail inválido'
-      }
-        
-      const errorMessage = errorMessages[error.code] || 'Não conseguimos enviar o e-mail para reset de senha, tente novamente'
-      Alert.alert('ATENÇÃO', errorMessage, [{text: 'OK'}])
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
     }
   }
 

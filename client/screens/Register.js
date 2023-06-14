@@ -29,7 +29,7 @@ export default function RegisterScreen({navigation}) {
       setLoading(false)
       Alert.alert('ÊXITO', 'Conta criada com sucesso\nVerifique o código que enviamos no seu e-mail', [{
         text: 'OK', 
-        onPress: () => navigation.reset({index: 2, routes: [{name: 'Home'}, {name: 'Login'}, {name: 'ValidationCode', params: {email: email}}]})}
+        onPress: () => navigation.reset({index: 2, routes: [{name: 'Home'}, {name: 'Login'}, {name: 'RegisterCode', params: {email: email}}]})}
       ])
     } catch (error) {
       setLoading(false)

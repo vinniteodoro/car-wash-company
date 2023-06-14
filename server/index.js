@@ -14,8 +14,8 @@ const db = mysql.createPool({
 })
 
 const poolData = {
-  UserPoolId: 'sa-east-1_O8P3VLLQ6',
-  ClientId: '42p3dha5fp5rc8a2t300fvf2ov'
+  UserPoolId: process.env.COG_USERPOOLID,
+  ClientId: process.env.COG_CLIENTID
 }
 
 const userPool = new CognitoUserPool(poolData)
@@ -24,6 +24,51 @@ var cognitoUser
 app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
+
+app.post('/api/resetPassword', (req, res) => {
+  const email = req.body.email
+  const userData = {Username: email, Pool: userPool}
+  const user = new CognitoUser(userData)
+
+  user.forgotPassword({
+    onSuccess: function() {
+      res.status(200).end()
+    },
+    onFailure: function(error) {
+      if ((error.message.toLowerCase()).includes("'username' failed to satisfy constraint")) {
+        res.status(400).send('E-mail inválido')
+      } else {
+        res.status(400).send('Não conseguimos enviar o e-mail para reset de senha, tente novamente')
+      }
+    }
+  })
+})
+
+app.post('/api/confirmResetPassword', (req, res) => {
+  const {email, code, newPassword, confirmNewPassword} = req.body
+  const userData = {Username: email, Pool: userPool}
+  const user = new CognitoUser(userData)
+
+  if (newPassword === confirmNewPassword) {
+    user.confirmPassword(code, newPassword, {
+      onSuccess() {
+        res.status(200).end()
+      },
+      onFailure(error) {
+        console.log(error)
+        if ((error.message.toLowerCase()).includes("'confirmationcode' failed to satisfy constraint")) {
+          res.status(400).send('Código inválido')
+        } else if ((error.message.toLowerCase()).includes("'password' failed to satisfy constraint")) {
+          res.status(400).send('Nova senha inválida')
+        } else {
+          res.status(400).send('Não conseguimos trocar a senha, tente novamente')
+        }
+      }
+    })
+  } else {
+    res.status(400).send('As senhas não são iguais')
+  }
+})
 
 app.post('/api/name', (req, res) => {
   const email = req.body.email
@@ -86,7 +131,6 @@ app.post('/api/isLogged', (req, res) => {
 app.post('/api/logout', (req, res) => {
   cognitoUser.signOut((error) => {
     if (error) {
-      console.error(error.message)
       res.status(500).send('Falha ao sair da conta, tente novamente')
     } else {
       res.status(200).end()

@@ -14,7 +14,8 @@ import ProblemaApp from './screens/ProblemaApp'
 import CadastraServico from './screens/CadastraServico'
 import AlteraEndereco from './screens/AlteraEndereco'
 import AlteraVeiculo from './screens/AlteraVeiculo'
-import ValidationCode from './screens/ValidationCode'
+import RegisterCode from './screens/RegisterCode'
+import ResetCode from './screens/ResetCode'
 import Veiculos from './screens/Veiculos'
 import Tabs from './Tabs'
 
@@ -46,7 +47,8 @@ export default function App() {
         <Stack.Screen name='AlteraEndereco' component={AlteraEndereco} options={{title: 'ALTERAR ENDEREÇO'}}/>
         <Stack.Screen name='AlteraVeiculo' component={AlteraVeiculo} options={{title: 'ALTERAR VEÍCULO'}}/>
         <Stack.Screen name='Veiculos' component={Veiculos} options={{title: 'CADASTRO DE VEÍCULOS'}}/>
-        <Stack.Screen name='ValidationCode' component={ValidationCode} options={{title: 'CONFIRMAÇÃO DE E-MAIL'}}/>
+        <Stack.Screen name='RegisterCode' component={RegisterCode} options={{title: 'CONFIRMAÇÃO DE E-MAIL'}}/>
+        <Stack.Screen name='ResetCode' component={ResetCode} options={{title: 'RESET DE SENHA'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   )

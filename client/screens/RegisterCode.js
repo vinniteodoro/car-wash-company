@@ -5,7 +5,7 @@ import AppLoader from '../configs/loader'
 import Axios from 'axios'
 import {server} from '../configs/server'
 
-export default function ValidationCodeScreen({route, navigation}) {
+export default function RegisterCodeScreen({route, navigation}) {
   const [code, setCode] = useState(['', '', '', '', '', ''])
   const inputRefs = useRef([])
   const [email, setEmail] = useState('')
