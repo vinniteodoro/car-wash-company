@@ -25,6 +25,42 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+app.post('/api/sendTicket', async (req, res) => {
+  const {email, category, message} = req.body
+  const maxCaracters = 9999999
+  var randomNumber = String(Math.floor(Math.random() * (maxCaracters + 1))).padStart(6, '0')
+
+  const checkAvailability = () => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT id FROM tickets WHERE id=?', [randomNumber], (error, result) => {
+        if (error) {
+          reject('Falha ao conectar com o servidor, tente novamente');
+        } else {
+          if (result.length > 0) {
+            randomNumber = String(Math.floor(Math.random() * (maxCaracters + 1))).padStart(6, '0')
+            resolve(checkAvailability())
+          } else {
+            resolve()
+          }
+        }
+      })
+    })
+  }
+
+  if (category==='' || message==='') {
+    res.status(400).send('Escolha uma categoria e digite uma mensagem')
+  } else {
+    await checkAvailability()
+    db.query('INSERT INTO tickets (id, email, category, message, status) values (?, ?, ?, ?, ?)', [randomNumber, email, category, message, 'Aberto'], (error) => {
+      if (error) {
+        res.status(500).send('Falha ao conectar com o servidor, tente novamente')
+      } else {
+        res.status(200).send({randomNumber})
+      }
+    })
+  }
+})
+
 app.post('/api/resetPassword', (req, res) => {
   const email = req.body.email
   const userData = {Username: email, Pool: userPool}

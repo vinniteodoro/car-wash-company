@@ -1,16 +1,15 @@
 import {Text, TextInput, TouchableOpacity, View, Alert} from 'react-native'
-import {auth, ticketsRef} from '../configs/firebase'
-import {userType} from './Login'
+import {userType, userEmail} from './Login'
 import React, {useState} from 'react'
-import {addDoc, Timestamp, query, where, getDocs} from 'firebase/firestore'
 import AppLoader from '../configs/loader'
 import {SelectList} from 'react-native-dropdown-select-list'
+import Axios from 'axios'
+import {server} from '../configs/server'
 
 export default function ProblemaAppScreen({navigation}) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [type, setType] = useState('')
-  const maxCaracters = 9999999
 
   const options = [
     {label: 'Pedido', value: 'Pedido'},
@@ -33,37 +32,15 @@ export default function ProblemaAppScreen({navigation}) {
     setLoading(true)
   
     try {
-      if (type==='') {
-        setLoading(false)
-        Alert.alert('ATENÇÃO', 'Escolha uma categoria de problemas', [{text: 'OK'}])
-      } else {
-        const randomNumber = String(Math.floor(Math.random() * (maxCaracters + 1))).padStart(6, '0')
-        const q = query(ticketsRef, where('id', '==', randomNumber))
-    
-        const querySnapshot = await getDocs(q)
-        if (querySnapshot.empty) {
-          await addDoc(ticketsRef, {
-            id: randomNumber, 
-            email: auth.currentUser.email, 
-            category: type, 
-            message: message, 
-            status: 'Aberto', 
-            createdAt: Timestamp.now(), 
-            closedAt: ''
-          })
-
-          setLoading(false)
-          Alert.alert('ÊXITO', 'Ticket enviado com sucesso, em breve entraremos em contato com você', [{
-            text: 'OK', 
-            onPress: () => navigation.navigate('Perfil')}
-          ])
-        } else {
-          handleTicket()
-        }
-      }
+      const resp = await Axios.post('http://' + server + '/api/sendTicket', {email: userEmail, category: type, message: message})
+      setLoading(false)
+      Alert.alert('ÊXITO', 'Ticket #' + resp.data.randomNumber +  ' enviado com sucesso\nEm breve entraremos em contato com você via e-mail', [{
+        text: 'OK', 
+        onPress: () => navigation.navigate('Perfil')}
+      ])
     } catch (error) {
       setLoading(false)
-      Alert.alert('ERRO', 'Erro ao enviar o ticket, tente novamente', [{text: 'OK'}])
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
     }
   }
 
@@ -71,7 +48,7 @@ export default function ProblemaAppScreen({navigation}) {
     <View className="items-center p-5 bg-white flex-1">
       <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Abrir ticket</Text>
       <Text className="w-full text-base text-center">
-        Sentimos muito que a experiência com nosso aplicativo não esteja das melhores...nos conte melhor qual é o problema e retornaremos o mais rápido possível ;{')'}
+        Sentimos muito que a experiência com nosso aplicativo não esteja das melhores...nos conte melhor qual o que está acontecendo ;{')'}
       </Text>
       <TextInput 
         className="w-full h-32 text-base rounded-md bg-gray-500/10 mt-12 pl-2 focus:border-blue-950/90 focus:border-2" 
