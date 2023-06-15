@@ -25,8 +25,16 @@ export default function LoginScreen({navigation}) {
       setLoading(false)
       navigation.reset({index: 0, routes: [{name: 'InicioTab'}]})
     } catch (error) {
-      setLoading(false)
-      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
+      if (error.response.data === 'E-mail não verificado') {
+        await Axios.post('http://' + server + '/api/resendConfirmCode', {email: email})
+        setLoading(false)
+        Alert.alert('ÊXITO', 'E-mail ainda não verificado\nVerifique o código que enviamos no seu e-mail', [{
+          text: 'OK', 
+          onPress: () => navigation.reset({index: 2, routes: [{name: 'Home'}, {name: 'Login'}, {name: 'RegisterCode', params: {email: email}}]})}
+        ])
+      } else {
+        Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
+      }
     }
   }
 

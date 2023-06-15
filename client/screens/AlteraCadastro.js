@@ -101,6 +101,9 @@ export default function AlteraCadastroScreen({navigation}) {
 }
 
 function validarCPF(cpf) {
+  if (userType==='Parceiro') {
+    return true
+  }
   cpf = cpf.replace(/[^\d]+/g, '')
 
   if (cpf.length !== 11 || /^(.)\1+$/.test(cpf)) {

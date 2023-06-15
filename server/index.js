@@ -239,6 +239,8 @@ app.post('/api/login', (req, res) => {
     onFailure: function(error) {
       if ((error.message.toLowerCase()).includes('incorrect username or password')) {
         res.status(400).send('E-mail ou senha incorretos')
+      } else if ((error.message.toLowerCase()).includes('user is not confirmed')) {
+        res.status(400).send('E-mail não verificado')
       } else if ((error.message.toLowerCase()).includes('missing required parameter username')) {
         res.status(400).send('Preencha o email')
       } else {
