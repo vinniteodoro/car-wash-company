@@ -15,7 +15,7 @@ export default function PerfilScreen({navigation}) {
       React.useCallback(() => {
         const fetchData = async () => {
           try {
-            const resp = await Axios.post('http://' + server + '/api/name', {email: userEmail})
+            const resp = await Axios.post('http://' + server + '/api/getUserInfo', {email: userEmail})
             setName(resp.data.userName)
           } catch (error) {
             setName(null)
@@ -80,12 +80,7 @@ export default function PerfilScreen({navigation}) {
               <Ionicons name="chevron-forward" size={24} color={'rgb(30, 58, 138)'}/>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity 
-            className="flex-row border-t border-b border-gray-100 py-2" 
-            onPress={() => Alert.alert('ATENÇÃO', 'Para atualizar o cadastro, insira novamente sua senha', [{
-              text: 'OK', 
-              onPress: () => navigation.navigate('Reautenticacao', {page: 'AlteraCadastro'})
-            }])}>
+          <TouchableOpacity className="flex-row border-t border-b border-gray-100 py-2" onPress={() => navigation.navigate('AlteraCadastro')}>
             <View className="mt-2">
               <Ionicons name="person-circle-outline" size={24}/>
             </View>

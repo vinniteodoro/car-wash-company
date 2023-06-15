@@ -3,7 +3,7 @@ const app = express()
 const mysql = require('mysql')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const {CognitoUserPool, CognitoUser, AuthenticationDetails} = require('amazon-cognito-identity-js')
+const {CognitoUserPool, CognitoUser, CognitoUserAttribute, AuthenticationDetails} = require('amazon-cognito-identity-js')
 
 const db = mysql.createPool({
   host: process.env.MYSQL_HOST,
@@ -24,6 +24,44 @@ var cognitoUser
 app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
+
+app.post('/api/changeUserInfo', async (req, res) => {
+  const {name, cpfCnpj, mobile, email} = req.body
+
+  db.query('update users set name=?, cpfCnpj=?, mobile=? where email=?', [name, cpfCnpj, mobile, email], (error) => {
+    if (error) {
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/isVerified', async (req, res) => {
+  const email = req.body.email
+
+  cognitoUser.getSession(async (err) => {
+    if (err) {
+      console.error(err)
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      cognitoUser.getUserAttributes((err, attributes) => {
+        if (err) {
+          console.error(err)
+          res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+        } else {
+          for (let attribute of attributes) {
+            if (attribute.getName() === 'email_verified') {
+              var isEmailVerified = attribute.getValue()
+              break
+            }  
+          }
+          res.status(200).send({isEmailVerified})
+        }
+      })
+    }
+  })
+})
 
 app.post('/api/sendTicket', async (req, res) => {
   const {email, category, message} = req.body
@@ -106,16 +144,18 @@ app.post('/api/confirmResetPassword', (req, res) => {
   }
 })
 
-app.post('/api/name', (req, res) => {
+app.post('/api/getUserInfo', (req, res) => {
   const email = req.body.email
 
-  db.query('select name from users where email=?', [email], (error, result) => {
+  db.query('select * from users where email=?', [email], (error, result) => {
     if (error) {
       res.status(500).send('Falha ao conectar com o servidor, tente novamente')
     } else {
       if (result.length > 0) {
         const userName = result[0].name
-        res.status(200).send({userName})
+        const userMobile = result[0].mobile
+        const userCpfCnpj = result[0].cpfCnpj
+        res.status(200).send({userName, userMobile, userCpfCnpj})
       } else {
         res.status(400).send('Usuário não encontrado')
       }

@@ -1,88 +1,57 @@
 import {Text, TextInput, TouchableOpacity, View, Alert} from 'react-native'
-import {auth, usersRef, db} from '../configs/firebase'
-import {sendEmailVerification} from 'firebase/auth'
-import {userType} from './Login'
-import React, {useState, useEffect} from 'react'
-import {query, where, getDocs, updateDoc, doc} from 'firebase/firestore'
+import {userType, userEmail} from './Login'
+import React, {useState} from 'react'
 import AppLoader from '../configs/loader'
 import {TextInputMask} from 'react-native-masked-text'
+import Axios from 'axios'
+import {server} from '../configs/server'
+import {useFocusEffect} from '@react-navigation/native'
 
 export default function AlteraCadastroScreen({navigation}) {
   const [nome, setNome] = useState('')
   const [cpfCnpj, setCpfCnpj] = useState('')
   const [celular, setCelular] = useState('')
-  const [documentId, setDocumentId] = useState('')
   const [loading, setLoading] = useState(false)
   const [isCpfCnpjFilled, setIsCpfCnpjFilled] = useState(false)
 
-  useEffect(() => {
-    setLoading(true)
-  
-    const fetchData = async () => {
-      try {
-        const querySnapshot = await getDocs(query(usersRef, where('email', '==', auth.currentUser.email)))
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const resp = await Axios.post('http://' + server + '/api/getUserInfo', {email: userEmail})
+          setNome(resp.data.userName)
+          setCpfCnpj(resp.data.userCpfCnpj)
+          setCelular(resp.data.userMobile)
 
-        if (querySnapshot.docs.length > 0) {
-          setNome(querySnapshot.docs[0].data().nome)
-          setCpfCnpj(querySnapshot.docs[0].data().cpfcnpj)
-          setCelular(querySnapshot.docs[0].data().celular)
-          setDocumentId(querySnapshot.docs[0].id)
-
-          if(!querySnapshot.docs[0].data().cpfcnpj=='') {
+          if (resp.data.usercpfCnpj=='') {
             setIsCpfCnpjFilled(true)
           }
-          setLoading(false)
-        } else {
-          setLoading(false)
-          Alert.alert('ATENÇÃO', 'Nenhum cadastro encontrado, tente novamente', [{text: 'OK'}])
+        } catch (error) {
+          Alert.alert('ERRO', 'Não conseguimos buscar suas informações, tente novamente', [{text: 'OK', onPress: () => navigation.navigate('Perfil')}])
         }
-      } catch (error) {
-        setLoading(false)
-        Alert.alert('ERRO', 'Não conseguimos recuperar suas informações, tente novamente', [{
-          text: 'OK', 
-          onPress: () => navigation.navigate('Perfil')
-        }])
       }
-    }
-    fetchData()
-  }, [])
+      fetchData()
+    }, [])
+  )
 
   const handleAtualizar = async () => {
     setLoading(true)
-    
+
     try {
-      await auth.currentUser.reload()
-    
-      if (auth.currentUser.emailVerified === false) {
-          try {
-            await sendEmailVerification(auth.currentUser)
-    
-            setLoading(false)
-            Alert.alert('ATENÇÃO', 'Seu e-mail ainda não foi verificado. Enviamos um link para validação, tente novamente após validar', [{
-              text: 'OK', 
-              onPress: () => navigation.navigate('Perfil')
-            }])
-          } catch (verificationError) {
-            setLoading(false)
-            Alert.alert('ERRO', 'Seu e-mail ainda não foi verificado e não conseguimos enviar o link para validá-lo. Tente novamente', [{text: 'OK'}])
-          }
+      const resp = await Axios.post('http://' + server + '/api/isVerified', {email: userEmail})
+      setLoading(false)
+
+      if (validarCPF(cpfCnpj)) {
+        await Axios.post('http://' + server + '/api/changeUserInfo', {name: nome, cpfCnpj: cpfCnpj, mobile: celular, email: userEmail})
+        setLoading(false)
+        Alert.alert('ÊXITO', 'Cadastro atualizado com sucesso', [{text: 'OK', onPress: () => navigation.navigate('Perfil')}])
       } else {
-        if (validarCPF(cpfCnpj)) {
-          await updateDoc(doc(db, 'users', documentId), {cpfcnpj: cpfCnpj, celular: celular, nome: nome})
-    
-          setLoading(false)
-          Alert.alert('ÊXITO', 'Cadastro atualizado com sucesso', [{text: 'OK', onPress: () => navigation.navigate('Perfil', {avatarNome: nome})}])
-        } else {
-          setLoading(false)
-          Alert.alert('ERRO', 'CPF inválido', [{text: 'OK'}])
-        }
+        setLoading(false)
+        Alert.alert('ERRO', 'CPF inválido', [{text: 'OK'}])
       }
     } catch (error) {
       setLoading(false)
-      Alert.alert('ERRO', 'Não conseguimos atualizar seu cadastro, tente novamente', [{
-        text: 'OK', 
-        onPress: () => navigation.navigate('Perfil')
-      }])
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
     }
   }
 
@@ -114,7 +83,17 @@ export default function AlteraCadastroScreen({navigation}) {
         value={celular} 
         onChangeText={setCelular}
       />
-      <TouchableOpacity className="h-12 bg-blue-950/90 items-center justify-center w-full mt-4" onPress={handleAtualizar}>
+      <TouchableOpacity 
+        className="h-12 bg-blue-950/90 items-center justify-center w-full mt-4" 
+        onPress={() => {
+          Alert.alert('Confirmação', 'Você tem certeza?',
+            [
+              {text: 'Sim', onPress: () => {handleAtualizar()}},
+              {text: 'Não', style: 'cancel'}
+            ],
+            {cancelable: true}
+          )
+        }}>
         {loading ? (<AppLoader/>) : (<Text className="text-white font-bold text-lg">Atualizar</Text>)}
       </TouchableOpacity>
     </View>
