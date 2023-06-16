@@ -81,7 +81,7 @@ export default function AlteraEnderecoScreen({route, navigation}) {
             onPress: () => navigation.navigate('Perfil')}
           ])
         } else {
-          await Axios.post('http://' + server + '/api/updateAddress', {email: userEmail, number: numero, complement: complemento})
+          await Axios.post('http://' + server + '/api/updateAddress', {id: id, number: numero, complement: complemento})
           setLoading(false)
           Alert.alert('ÊXITO', 'Dados atualizados com sucesso', [{
             text: 'OK', 
@@ -97,7 +97,7 @@ export default function AlteraEnderecoScreen({route, navigation}) {
 
   return (
     <View className="p-5 flex-1 bg-white">
-      <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">Alterar endereço</Text>
+      <Text className="w-full text-blue-950/90 font-bold text-4xl text-center mt-20">{id ? 'Alterar endereço' : 'Cadastrar endereço'}</Text>
       {mostrarForms ? (
         <>
           <View className="py-12 px-2">

@@ -27,7 +27,6 @@ export default function EnderecosScreen({navigation}) {
 
   const handleExcluir = async (docId) => {
     setLoading(true)
-
     try {
       await Axios.post('http://' + server + '/api/deleteAddress', {id: docId})
       setLoading(false)

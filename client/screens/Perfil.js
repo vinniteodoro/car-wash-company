@@ -47,10 +47,7 @@ export default function PerfilScreen({navigation}) {
           {userType === 'Cliente' && (
             <TouchableOpacity 
               className="flex-row border-t border-b border-gray-100 py-2" 
-              onPress={() => Alert.alert('ATENÇÃO', 'Para atualizar os veículos, insira novamente sua senha', [{
-                text: 'OK', 
-                onPress: () => navigation.navigate('Reautenticacao', {page: 'Veiculos'})
-              }])}>
+              onPress={() => navigation.navigate('Veiculos')}>
               <View className="mt-2">
                 <Ionicons name="car-outline" size={24}/>
               </View>

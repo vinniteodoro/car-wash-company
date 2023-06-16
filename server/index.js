@@ -25,6 +25,108 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+app.post('/api/insertVehicle', async (req, res) => {
+  const {email, brand, color, model, plate, type, year, size} = req.body
+
+  db.query(
+    'insert into vehicles (email, brand, color, model, plate, type, year, size) values (?, ?, ?, ?, ?, ?, ?, ?)', 
+    [email, brand, color, model, plate, type, year, size], 
+    (error) => {
+      if (error) {
+        console.error(error)
+        res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+      } else {
+        res.status(200).end()
+      }
+    }
+  )
+})
+
+app.post('/api/updateVehicle', async (req, res) => {
+  const {id, brand, color, model, type, year} = req.body
+
+  db.query('update vehicles set brand=?, color=?, model=?, type=?, year=? where id=?', [brand, color, model, type, year, id], (error) => {
+    if (error) {
+      console.error(error)
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/checkVehicles', async (req, res) => {
+  const {email, plate} = req.body
+  var isUsed = false
+
+  const getVehicles = () => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM vehicles WHERE email=?', [email], (error, result) => {
+        if (error) {
+          reject('Falha ao conectar com o servidor, tente novamente')
+          res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+        } else {
+          result.forEach((row) => {
+            if ((row.plate).toLowerCase() === plate.toLowerCase()) {
+              isUsed = true
+            } 
+          }) 
+          resolve()
+        }
+      })
+    })
+  }
+  await getVehicles()
+  res.status(200).send({isUsed})
+})
+
+app.post('/api/deleteVehicle', async (req, res) => {
+  const id = req.body.id
+
+  db.query('delete FROM vehicles WHERE id=?', [id], (error) => {
+    if (error) {
+      console.error(error)
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/getVehicles', async (req, res) => {
+  const email = req.body.email
+  const vehiclesArray = []
+
+  const getVehicles = () => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM vehicles WHERE email=?', [email], (error, result) => {
+        if (error) {
+          reject('Falha ao conectar com o servidor, tente novamente')
+          res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+        } else {
+          result.forEach((row) => {
+            const vehicleData = {
+              id: row.id,
+              email: row.email,
+              brand: row.brand,
+              color: row.color,
+              model: row.model,
+              plate: row.plate,
+              type: row.type,
+              year: row.year,
+              size: row.size
+            }
+            vehiclesArray.push(vehicleData)
+          }) 
+          resolve()
+        }
+      })
+    })
+  }
+  await getVehicles()
+  res.status(200).send({vehiclesArray})
+})
+
 app.post('/api/checkAddresses', async (req, res) => {
   const {email, street, number, complement} = req.body
   var isUsed = false
@@ -51,9 +153,9 @@ app.post('/api/checkAddresses', async (req, res) => {
 })
 
 app.post('/api/updateAddress', async (req, res) => {
-  const {email, number, complement} = req.body
+  const {id, number, complement} = req.body
 
-  db.query('update addresses set number=?, complement=? where email=?', [number, complement, email], (error) => {
+  db.query('update addresses set number=?, complement=? where id=?', [number, complement, id], (error) => {
     if (error) {
       console.error(error)
       res.status(400).send('Falha ao conectar com o servidor, tente novamente')
