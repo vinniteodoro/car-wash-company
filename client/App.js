@@ -5,7 +5,6 @@ import Register from './screens/Register'
 import Login from './screens/Login'
 import Home from './screens/Home'
 import TrocaSenha from './screens/TrocaSenha'
-import Reautenticacao from './screens/Reautenticacao'
 import ResetSenha from './screens/ResetSenha'
 import AlteraCadastro from './screens/AlteraCadastro'
 import MeiosPagtoReceb from './screens/MeiosPagtoReceb'
@@ -37,7 +36,6 @@ export default function App() {
         <Stack.Screen name='Login' component={Login} options={{title: 'LOGIN'}}/>
         <Stack.Screen name='InicioTab' component={Tabs} options={{headerShown: false}}/>
         <Stack.Screen name='TrocaSenha' component={TrocaSenha} options={{title: 'TROCA DE SENHA'}}/>
-        <Stack.Screen name='Reautenticacao' component={Reautenticacao} options={{title: 'REAUTENTICAÇÃO'}}/>
         <Stack.Screen name='ResetSenha' component={ResetSenha} options={{title: 'ESQUECI MINHA SENHA'}}/>
         <Stack.Screen name='AlteraCadastro' component={AlteraCadastro} options={{title: 'CADASTRO'}}/>
         <Stack.Screen name='MeiosPagtoReceb' component={MeiosPagtoReceb}/>
