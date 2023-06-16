@@ -63,12 +63,7 @@ export default function PerfilScreen({navigation}) {
               </View>
             </TouchableOpacity>
           )}
-          <TouchableOpacity 
-            className="flex-row border-t border-b border-gray-100 py-2" 
-            onPress={() => Alert.alert('ATENÇÃO', 'Para atualizar os endereços, insira novamente sua senha', [{
-              text: 'OK', 
-              onPress: () => navigation.navigate('Reautenticacao', {page: 'Enderecos'})
-            }])}>
+          <TouchableOpacity className="flex-row border-t border-b border-gray-100 py-2" onPress={() => navigation.navigate('Enderecos')}>
             <View className="mt-2">
               <Ionicons name="location-outline" size={24}/>
             </View>

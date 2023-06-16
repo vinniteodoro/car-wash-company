@@ -25,6 +25,108 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+app.post('/api/checkAddresses', async (req, res) => {
+  const {email, street, number, complement} = req.body
+  var isUsed = false
+
+  const getAddressess = () => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM addresses WHERE email=?', [email], (error, result) => {
+        if (error) {
+          reject('Falha ao conectar com o servidor, tente novamente')
+          res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+        } else {
+          result.forEach((row) => {
+            if (row.street === street && row.number == number && (row.complement).toLowerCase() === complement.toLowerCase()) {
+              isUsed = true
+            } 
+          }) 
+          resolve()
+        }
+      })
+    })
+  }
+  await getAddressess()
+  res.status(200).send({isUsed})
+})
+
+app.post('/api/updateAddress', async (req, res) => {
+  const {email, number, complement} = req.body
+
+  db.query('update addresses set number=?, complement=? where email=?', [number, complement, email], (error) => {
+    if (error) {
+      console.error(error)
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/insertAddress', async (req, res) => {
+  const {email, zipcode, state, city, neighborhood, street, number, complement} = req.body
+
+  db.query(
+    'insert into addresses (email, zipcode, state, city, neighborhood, street, number, complement) values (?, ?, ?, ?, ?, ?, ?, ?)', 
+    [email, zipcode, state, city, neighborhood, street, number, complement], 
+    (error) => {
+      if (error) {
+        console.error(error)
+        res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+      } else {
+        res.status(200).end()
+      }
+    }
+  )
+})
+
+app.post('/api/deleteAddress', async (req, res) => {
+  const id = req.body.id
+
+  db.query('delete FROM addresses WHERE id=?', [id], (error) => {
+    if (error) {
+      console.error(error)
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/getAddresses', async (req, res) => {
+  const email = req.body.email
+  const addressesArray  = []
+
+  const getAddressess = () => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM addresses WHERE email=?', [email], (error, result) => {
+        if (error) {
+          reject('Falha ao conectar com o servidor, tente novamente')
+          res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+        } else {
+          result.forEach((row) => {
+            const addressData = {
+              id: row.id,
+              email: row.email,
+              neighborhood: row.neighborhood,
+              zipcode: row.zipcode,
+              city: row.zipcode,
+              complement: row.complement,
+              state: row.state,
+              street: row.street,
+              number: row.number
+            }
+            addressesArray.push(addressData)
+          }) 
+          resolve()
+        }
+      })
+    })
+  }
+  await getAddressess()
+  res.status(200).send({addressesArray})
+})
+
 app.post('/api/changeUserInfo', async (req, res) => {
   const {name, cpfCnpj, mobile, email} = req.body
 
@@ -72,7 +174,7 @@ app.post('/api/sendTicket', async (req, res) => {
     return new Promise((resolve, reject) => {
       db.query('SELECT id FROM tickets WHERE id=?', [randomNumber], (error, result) => {
         if (error) {
-          reject('Falha ao conectar com o servidor, tente novamente');
+          reject('Falha ao conectar com o servidor, tente novamente')
         } else {
           if (result.length > 0) {
             randomNumber = String(Math.floor(Math.random() * (maxCaracters + 1))).padStart(6, '0')

@@ -1,9 +1,11 @@
 import {Text, TextInput, TouchableOpacity, View, Alert} from 'react-native'
-import {auth, userAddressRef, db} from '../configs/firebase'
-import React, {useState, useEffect} from 'react'
-import {addDoc, updateDoc, getDocs, doc, query, where} from 'firebase/firestore'
+import React, {useState} from 'react'
 import AppLoader from '../configs/loader'
 import {TextInputMask} from 'react-native-masked-text'
+import {server} from '../configs/server'
+import {useFocusEffect} from '@react-navigation/native'
+import {userEmail} from './Login'
+import Axios from 'axios'
 
 export default function AlteraEnderecoScreen({route, navigation}) {
   const [cidade, setCidade] = useState('')
@@ -18,33 +20,34 @@ export default function AlteraEnderecoScreen({route, navigation}) {
   const item = route.params
   const [mostrarForms, setMostrarForms] = useState(false)
 
-  useEffect(() => {
-    setLoading(true) 
-
-    if(item) {
-      setCidade(item.cidade)
-      setCep(item.cep)
-      setLogradouro(item.logradouro)
-      setBairro(item.bairro)
-      setEstado(item.estado)
-      setNumero(item.numero)
-      setComplemento(item.complemento)
-      setId(item.id)
-      setMostrarForms(true)
-    }
-    setLoading(false) 
-  }, [])
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        if(item) {
+          setCidade(item.city)
+          setCep(item.zipcode)
+          setLogradouro(item.street)
+          setBairro(item.neighborhood)
+          setEstado(item.state)
+          setNumero((item.number).toString())
+          setComplemento(item.complement)
+          setId(item.id)
+          setMostrarForms(true)
+        }
+      }
+      fetchData()
+    }, [])
+  )
 
   const handleBuscaEndereco = async () => {
     setLoading(true)
-    
     try {
       const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
       const data = await response.json()
   
       if (data.erro) {
         setLoading(false)
-        Alert.alert('ERRO', 'CPF não encontrado, tente novamente', [{text: 'OK'}])
+        Alert.alert('ERRO', 'CEP não encontrado, tente novamente', [{text: 'OK'}])
       } else {
         setEstado(data.uf)
         setCidade(data.localidade)
@@ -61,50 +64,24 @@ export default function AlteraEnderecoScreen({route, navigation}) {
 
   const handleAtualizar = async () => {
     setLoading(true)
-    
     try {
-      const q = query(userAddressRef, where('email', '==', auth.currentUser.email))
-      const querySnapshot = await getDocs(q)
-  
-      let endCadastrado = false
-  
-      querySnapshot.forEach((doc) => {
-        if (logradouro === doc.data().logradouro && numero === doc.data().numero && complemento === doc.data().complemento) {
-          setLoading(false)
-          endCadastrado = true
-          Alert.alert('ERRO', 'Esse endereço já está cadastrado', [{text: 'OK'}])
-        }
-      })
-  
-      if (!endCadastrado) {
+      const resp = await Axios.post('http://' + server + '/api/checkAddresses', {email: userEmail, street: logradouro, number: numero, complement: complemento})
+      if (resp.data.isUsed === true) {
+        setLoading(false)
+        Alert.alert('ERRO', 'Esse endereço já está cadastrado', [{text: 'OK'}])
+      } else {
         if (!id) {
-          await addDoc(userAddressRef, {
-            email: auth.currentUser.email, 
-            cep: cep, 
-            estado: estado, 
-            cidade: cidade, 
-            bairro: bairro, 
-            logradouro: logradouro, 
-            numero: numero, 
-            complemento: complemento
-          })
-    
+          await Axios.post(
+            'http://' + server + '/api/insertAddress', 
+            {email: userEmail, zipcode: cep, state: estado, city: cidade, neighborhood: bairro, street: logradouro, number: numero, complement: complemento}
+          )
           setLoading(false)
           Alert.alert('ÊXITO', 'Novo endereço cadastrado com sucesso', [{
             text: 'OK', 
             onPress: () => navigation.navigate('Perfil')}
           ])
         } else {
-          await updateDoc(doc(db, 'useraddress', id), {
-            cep: cep, 
-            estado: estado, 
-            cidade: cidade, 
-            bairro: bairro, 
-            logradouro: logradouro, 
-            numero: numero, 
-            complemento: complemento
-          })
-  
+          await Axios.post('http://' + server + '/api/updateAddress', {email: userEmail, number: numero, complement: complemento})
           setLoading(false)
           Alert.alert('ÊXITO', 'Dados atualizados com sucesso', [{
             text: 'OK', 
@@ -114,7 +91,7 @@ export default function AlteraEnderecoScreen({route, navigation}) {
       }
     } catch (error) {
       setLoading(false)
-      Alert.alert('ERRO', 'Não conseguimos realizar a operação, tente novamente', [{text: 'OK'}])
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
     }
   }
 
@@ -139,13 +116,24 @@ export default function AlteraEnderecoScreen({route, navigation}) {
               keyboardType="numeric"
             />
             <TextInput
-              className="ml-7 border-b border-neutral-300 focus:border-neutral-600 font-bold w-36"
+              className="ml-9 border-b border-neutral-300 focus:border-neutral-600 font-bold w-36"
               value={complemento} 
               onChangeText={setComplemento}
             />
           </View>
           <View className="items-center">
-            <TouchableOpacity className="h-12 bg-blue-950/90 items-center justify-center w-full mt-4" onPress={handleAtualizar}>
+            <TouchableOpacity 
+              className="h-12 bg-blue-950/90 items-center justify-center w-full mt-4" 
+              onPress={() => {
+                Alert.alert('Confirmação', 'Você tem certeza?',
+                  [
+                    {text: 'Sim', onPress: () => {handleAtualizar()}},
+                    {text: 'Não', style: 'cancel'}
+                  ],
+                  {cancelable: true}
+                )
+              }}
+            >
               {loading ? (<AppLoader/>) : (<Text className="text-white font-bold text-lg">{id ? 'Atualizar' : 'Cadastrar'}</Text>)}
             </TouchableOpacity>
           </View>
@@ -157,7 +145,7 @@ export default function AlteraEnderecoScreen({route, navigation}) {
             maxLength={9} 
             value={cep} 
             onChangeText={setCep}
-            className="rounded-md h-12 text-xl bg-gray-500/10 focus:border-blue-950/90 focus:border-2 mt-4 pl-2 w-24"
+            className="rounded-md h-12 text-xl bg-gray-500/10 focus:border-blue-950/90 focus:border-2 mt-4 pl-2 w-32"
             placeholder='CEP'
           />
           <TouchableOpacity className="h-12 bg-blue-950/90 items-center justify-center w-full mt-4" onPress={handleBuscaEndereco}>

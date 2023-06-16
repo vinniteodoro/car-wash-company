@@ -1,46 +1,35 @@
 import {Text, TouchableOpacity, View, FlatList, Alert} from 'react-native'
-import {auth, userAddressRef, db} from '../configs/firebase'
-import React, {useState, useEffect} from 'react'
-import {query, where, getDocs, doc, deleteDoc} from 'firebase/firestore'
+import React, {useState} from 'react'
 import AppLoader from '../configs/loader'
-import {userType} from './Login'
+import {userType, userEmail} from './Login'
 import {Ionicons} from '@expo/vector-icons'
+import Axios from 'axios'
+import {server} from '../configs/server'
+import {useFocusEffect} from '@react-navigation/native'
 
 export default function EnderecosScreen({navigation}) {
   const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-
-      try {
-        const q = query(userAddressRef, where('email', '==', auth.currentUser.email))
-        const querySnapshot = await getDocs(q)
-        
-        const docs = []
-        querySnapshot.forEach((doc) => {
-            docs.push({id: doc.id, ...doc.data()})
-        })
-
-        setDocuments(docs)
-        setLoading(false)
-      } catch (error) {
-        setLoading(false)
-        Alert.alert('ERRO', 'Não conseguimos buscar seus endereços, tente novamente', [{
-            text: 'OK', 
-            onPress: () => navigation.navigate('Perfil')}
-        ])
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const resp = await Axios.post('http://' + server + '/api/getAddresses', {email: userEmail})
+          setDocuments(resp.data.addressesArray)
+        } catch (error) {
+          Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
+        }
       }
-    }
-    fetchData()
-  }, [])
+      fetchData()
+    }, [])
+  )
 
   const handleExcluir = async (docId) => {
     setLoading(true)
 
     try {
-      await deleteDoc(doc(db, 'useraddress', docId))
+      await Axios.post('http://' + server + '/api/deleteAddress', {id: docId})
       setLoading(false)
       Alert.alert('ÊXITO', 'Endereço excluído com sucesso', [{
         text: 'OK', 
@@ -48,7 +37,7 @@ export default function EnderecosScreen({navigation}) {
       ])
     } catch (error) {
       setLoading(false)
-      Alert.alert('ERRO', 'Não conseguimos excluir o endereço, por favor tente novamente', [{text: 'OK'}])
+      Alert.alert('ERRO', error.response.data, [{text: 'OK'}])
     }
   }
 
@@ -67,26 +56,37 @@ export default function EnderecosScreen({navigation}) {
             <Ionicons name="navigate-circle-outline" size={22} color={'rgba(82, 82, 82, .2)'}/>
           </View>
           <View className="pl-6">
-            <Text className="text-base">{item.logradouro}, {item.numero}</Text>
-            <Text className="mb-1 text-neutral-400">{item.bairro}, {item.cidade} - {item.estado}</Text>
-            <Text className="text-xs text-neutral-400">{item.complemento}</Text>
+            <Text className="text-base">{item.street}, {item.number}</Text>
+            <Text className="mb-1 text-neutral-400">{item.neighborhood}, {item.city} - {item.state}</Text>
+            <Text className="text-xs text-neutral-400">{item.complement}</Text>
           </View>
           <TouchableOpacity 
             className="absolute mt-2 right-2"
             onPress={() => navigation.navigate('AlteraEndereco', {
-              id: item.id, 
-              cep: item.cep, 
-              estado: item.estado, 
-              cidade: item.cidade, 
-              bairro: item.bairro, 
-              logradouro: item.logradouro, 
-              numero: item.numero, 
-              complemento: item.complemento
+              id: item.id,
+              neighborhood: item.neighborhood,
+              zipcode: item.zipcode,
+              city: item.zipcode,
+              complement: item.complement,
+              state: item.state,
+              street: item.street,
+              number: item.number
             })}
           >
             <Ionicons name="ellipsis-horizontal" size={26} color={'rgb(30, 58, 138)'}/>
           </TouchableOpacity>
-          <TouchableOpacity className="absolute top-14 mt-2 right-3" onPress={() => handleExcluir(item.id)}>
+          <TouchableOpacity 
+            className="absolute top-14 mt-2 right-3" 
+            onPress={() => {
+              Alert.alert('Confirmação', 'Você tem certeza?',
+                [
+                  {text: 'Sim', onPress: () => {handleExcluir(item.id)}},
+                  {text: 'Não', style: 'cancel'}
+                ],
+                {cancelable: true}
+              )
+            }}
+          >
             {loading ? (<AppLoader/>) : (<Ionicons name="trash-outline" size={14} color={'rgba(82, 82, 82, .7)'}/>)}
           </TouchableOpacity>
         </View>
