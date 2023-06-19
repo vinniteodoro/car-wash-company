@@ -26,11 +26,11 @@ app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
 app.post('/api/insertVehicle', async (req, res) => {
-  const {email, brand, color, model, plate, type, year, size} = req.body
+  const {email, brand, color, model, plate, type, year, body} = req.body
 
   db.query(
-    'insert into vehicles (email, brand, color, model, plate, type, year, size) values (?, ?, ?, ?, ?, ?, ?, ?)', 
-    [email, brand, color, model, plate, type, year, size], 
+    'insert into vehicles (email, brand, color, model, plate, type, year, body) values (?, ?, ?, ?, ?, ?, ?, ?)', 
+    [email, brand, color, model, plate, type, year, body], 
     (error) => {
       if (error) {
         console.error(error)
@@ -43,9 +43,9 @@ app.post('/api/insertVehicle', async (req, res) => {
 })
 
 app.post('/api/updateVehicle', async (req, res) => {
-  const {id, brand, color, model, type, year} = req.body
+  const {id, brand, color, model, type, year, body, plate} = req.body
 
-  db.query('update vehicles set brand=?, color=?, model=?, type=?, year=? where id=?', [brand, color, model, type, year, id], (error) => {
+  db.query('update vehicles set brand=?, color=?, model=?, type=?, year=?, body=?, plate=? where id=?', [brand, color, model, type, year, body, plate, id], (error) => {
     if (error) {
       console.error(error)
       res.status(400).send('Falha ao conectar com o servidor, tente novamente')
@@ -114,7 +114,7 @@ app.post('/api/getVehicles', async (req, res) => {
               plate: row.plate,
               type: row.type,
               year: row.year,
-              size: row.size
+              body: row.body
             }
             vehiclesArray.push(vehicleData)
           }) 

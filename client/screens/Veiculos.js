@@ -58,7 +58,7 @@ export default function VeiculosScreen({navigation}) {
             <Text className="text-base">{item.brand} {item.model}, {item.year}</Text>
             <Text className="text-neutral-400">{item.color}</Text>
             <Text className="text-xs text-neutral-400">{item.plate}</Text>
-            <Text className="text-xs text-neutral-400">Porte: {item.size}</Text>
+            <Text className="text-xs text-neutral-400">{item.body}</Text>
           </View>
           <TouchableOpacity 
             className="absolute mt-2 right-2"
@@ -70,7 +70,7 @@ export default function VeiculosScreen({navigation}) {
               color: item.color,
               type: item.type, 
               year: item.year,
-              size: item.size
+              body: item.body
             })}
           >
             <Ionicons name="ellipsis-horizontal" size={26} color={'rgb(30, 58, 138)'}/>

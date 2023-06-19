@@ -12,18 +12,18 @@ export default function ProblemaAppScreen({navigation}) {
   const [type, setType] = useState('')
 
   const options = [
-    {label: 'Pedido', value: 'Pedido'},
-    {label: 'Pagamento', value: 'Pagamento'},
-    {label: 'Recebimento', value: 'Recebimento'},
-    {label: 'Busca', value: 'Busca'},
     {label: 'Alteração de cadastro', value: 'Alteração de cadastro'},
     {label: 'Alteração de endereço', value: 'Alteração de endereço'},
+    {label: 'Busca', value: 'Busca'},
     userType === 'Parceiro' ? ({label: 'Cadastro de serviço', value: 'Cadastro de serviço'}) : ({label: 'Cadastro de veículos', value: 'Cadastro de veículos'}),
+    {label: 'Criação de conta', value: 'Criação de conta'},
     {label: 'Login', value: 'Login'},
     {label: 'Logout', value: 'Logout'},
+    {label: 'Pagamento', value: 'Pagamento'},
+    {label: 'Pedido', value: 'Pedido'},
     {label: 'Reautenticação', value: 'Reautenticação'},
+    {label: 'Recebimento', value: 'Recebimento'},
     {label: 'Reset de senha', value: 'Reset de senha'},
-    {label: 'Criação de conta', value: 'Criação de conta'},
     {label: 'Troca de senha', value: 'Troca de senha'},
     {label: 'Outros', value: 'Outros'}
   ]
