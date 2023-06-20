@@ -499,28 +499,28 @@ export default function AlteraEnderecoScreen({route, navigation}) {
           maxLength={9}
         />
         <View className="w-full rounded-md mt-4 relative">
-          <SelectList setSelected={setType} data={typeOptions} placeholder='Selecione uma tipo de veículo...' search={false}/>
+          <SelectList setSelected={setType} data={typeOptions} placeholder={id!=='' ? type : 'Selecione um tipo de veículo...'} search={false}/>
           <View className="mt-2">
-            {type==='Carro' && <SelectList setSelected={setBody} data={bodyOptions} placeholder='Selecione uma carroceria...' search={false}/>}
+            {type==='Carro' && <SelectList setSelected={setBody} data={bodyOptions} placeholder={id!=='' ? body : 'Selecione uma carroceria...'} search={false}/>}
           </View>
           {(type==='Moto'||body!=='') &&
             <View className="mt-2">
-              <SelectList setSelected={setBrand} data={brandOptions[type]} placeholder='Selecione uma marca...'/>
+              <SelectList setSelected={setBrand} data={brandOptions[type]} placeholder={id!=='' ? brand : 'Selecione uma marca...'}/>
             </View>
           }
           {brand!=='' &&
             <View className="mt-2">
-              <SelectList setSelected={setModel} data={modelOptions[brand]} placeholder='Selecione um modelo...'/>
+              <SelectList setSelected={setModel} data={modelOptions[brand]} placeholder={id!=='' ? model : 'Selecione uma modelo...'}/>
             </View>
           }
           {model!=='' &&
             <View className="mt-2">
-              <SelectList setSelected={setYear} data={yearOptions} placeholder='Selecione um ano...'/>
+              <SelectList setSelected={setYear} data={yearOptions} placeholder={id!=='' ? year : 'Selecione um ano...'}/>
             </View>
           }
           {year!=='' &&
             <View className="mt-2">
-              <SelectList setSelected={setColor} data={colorOptions} placeholder='Selecione uma cor...'/>
+              <SelectList setSelected={setColor} data={colorOptions} placeholder={id!=='' ? color : 'Selecione uma cor...'}/>
             </View>
           }
           {color!=='' &&
