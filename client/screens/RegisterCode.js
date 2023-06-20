@@ -26,6 +26,16 @@ export default function RegisterCodeScreen({route, navigation}) {
     }
   }
 
+  const handleBackSpacePress = (index) => {
+    if (index > 0) {
+      const previousIndex = index - 1
+      const updatedCode = [...code]
+      inputRefs.current[previousIndex]?.focus()
+      updatedCode[previousIndex] = ''
+      setCode(updatedCode)
+    }
+  }
+
   const handleRef = (ref, index) => {
     inputRefs.current[index] = ref
   }
@@ -74,6 +84,7 @@ export default function RegisterCodeScreen({route, navigation}) {
               maxLength={1}
               value={code[index] || ''}
               onChangeText={(value) => handleChange(value, index)}
+              onKeyPress={({nativeEvent}) => {nativeEvent.key === 'Backspace' && handleBackSpacePress(index)}}
               keyboardType="numeric"
               ref={(ref) => handleRef(ref, index)}
             />
