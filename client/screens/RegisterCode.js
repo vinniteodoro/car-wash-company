@@ -27,7 +27,17 @@ export default function RegisterCodeScreen({route, navigation}) {
   }
 
   const handleBackSpacePress = (index) => {
-    if (index > 0) {
+    if (index===5 && code[5]!=='') {
+      const updatedCode = [...code]
+      updatedCode[index] = ''
+      setCode(updatedCode)
+    } else if (index===5 && code[5]==='') {
+      const previousIndex = index - 1
+      const updatedCode = [...code]
+      inputRefs.current[previousIndex]?.focus()
+      updatedCode[previousIndex] = ''
+      setCode(updatedCode)
+    } else {
       const previousIndex = index - 1
       const updatedCode = [...code]
       inputRefs.current[previousIndex]?.focus()
