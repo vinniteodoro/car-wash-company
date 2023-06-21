@@ -9,13 +9,14 @@ import ResetSenha from './screens/ResetSenha'
 import AlteraCadastro from './screens/AlteraCadastro'
 import MeiosPagtoReceb from './screens/MeiosPagtoReceb'
 import Enderecos from './screens/Enderecos'
-import ProblemaApp from './screens/ProblemaApp'
+import AbreTicket from './screens/AbreTicket'
 import CadastraServico from './screens/CadastraServico'
 import AlteraEndereco from './screens/AlteraEndereco'
 import AlteraVeiculo from './screens/AlteraVeiculo'
 import RegisterCode from './screens/RegisterCode'
 import ResetCode from './screens/ResetCode'
 import Veiculos from './screens/Veiculos'
+import ProblemaApp from './screens/ProblemaApp'
 import Tabs from './Tabs'
 
 const Stack = createNativeStackNavigator()
@@ -40,7 +41,8 @@ export default function App() {
         <Stack.Screen name='AlteraCadastro' component={AlteraCadastro} options={{title: 'CADASTRO'}}/>
         <Stack.Screen name='MeiosPagtoReceb' component={MeiosPagtoReceb}/>
         <Stack.Screen name='Enderecos' component={Enderecos} options={{title: 'ENDEREÇOS'}}/>
-        <Stack.Screen name='ProblemaApp' component={ProblemaApp} options={{title: 'PROBLEMAS COM O APP'}}/>
+        <Stack.Screen name='AbreTicket' component={AbreTicket} options={{title: 'ABRIR TICKET'}}/>
+        <Stack.Screen name='ProblemaApp' component={ProblemaApp} options={{title: 'PROBLEMA COM O APP'}}/>
         <Stack.Screen name='CadastraServico' component={CadastraServico} options={{title: 'CADASTRO DE SERVIÇOS'}}/>
         <Stack.Screen name='AlteraEndereco' component={AlteraEndereco} options={{title: 'ALTERAR ENDEREÇO'}}/>
         <Stack.Screen name='AlteraVeiculo' component={AlteraVeiculo} options={{title: 'ALTERAR VEÍCULO'}}/>

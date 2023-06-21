@@ -25,6 +25,44 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+app.post('/api/getTickets', async (req, res) => {
+  const email = req.body.email
+  const ticketsArray  = []
+
+  const getTickets = () => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM tickets WHERE email=? order by createdAt desc', [email], (error, result) => {
+        if (error) {
+          reject('Falha ao conectar com o servidor, tente novamente')
+          res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+        } else {
+          result.forEach((row) => {
+            var closedAt
+            if (row.closedAt===null) {
+              closedAt = row.closedAt
+            } else {
+              closedAt = `${row.closedAt.getDate().toString().padStart(2, '0')}/${(row.closedAt.getMonth() + 1).toString().padStart(2, '0')}/${row.closedAt.getFullYear()} ${row.closedAt.getHours().toString().padStart(2, '0')}:${row.closedAt.getMinutes().toString().padStart(2, '0')}`
+            }
+            const ticketsData = {
+              createdAt: `${row.createdAt.getDate().toString().padStart(2, '0')}/${(row.createdAt.getMonth() + 1).toString().padStart(2, '0')}/${row.createdAt.getFullYear()} ${row.createdAt.getHours().toString().padStart(2, '0')}:${row.createdAt.getMinutes().toString().padStart(2, '0')}`,
+              closedAt: closedAt,
+              category: row.category,
+              id: row.id,
+              message: row.message,
+              status: row.status,
+              title: row.title
+            }
+            ticketsArray.push(ticketsData)
+          }) 
+          resolve()
+        }
+      })
+    })
+  }
+  await getTickets()
+  res.status(200).send({ticketsArray})
+})
+
 app.post('/api/insertVehicle', async (req, res) => {
   const {email, brand, color, model, plate, type, year, body} = req.body
 
@@ -99,7 +137,7 @@ app.post('/api/getVehicles', async (req, res) => {
 
   const getVehicles = () => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM vehicles WHERE email=?', [email], (error, result) => {
+      db.query('SELECT * FROM vehicles WHERE email=? order by createdAt desc', [email], (error, result) => {
         if (error) {
           reject('Falha ao conectar com o servidor, tente novamente')
           res.status(400).send('Falha ao conectar com o servidor, tente novamente')
@@ -201,7 +239,7 @@ app.post('/api/getAddresses', async (req, res) => {
 
   const getAddressess = () => {
     return new Promise((resolve, reject) => {
-      db.query('SELECT * FROM addresses WHERE email=?', [email], (error, result) => {
+      db.query('SELECT * FROM addresses WHERE email=? order by createdAt desc', [email], (error, result) => {
         if (error) {
           reject('Falha ao conectar com o servidor, tente novamente')
           res.status(400).send('Falha ao conectar com o servidor, tente novamente')
@@ -268,7 +306,7 @@ app.post('/api/isVerified', async (req, res) => {
 })
 
 app.post('/api/sendTicket', async (req, res) => {
-  const {email, category, message} = req.body
+  const {email, category, message, title} = req.body
   const maxCaracters = 9999999
   var randomNumber = String(Math.floor(Math.random() * (maxCaracters + 1))).padStart(6, '0')
 
@@ -293,7 +331,7 @@ app.post('/api/sendTicket', async (req, res) => {
     res.status(400).send('Escolha uma categoria e digite uma mensagem')
   } else {
     await checkAvailability()
-    db.query('INSERT INTO tickets (id, email, category, message, status) values (?, ?, ?, ?, ?)', [randomNumber, email, category, message, 'Aberto'], (error) => {
+    db.query('INSERT INTO tickets (id, email, category, message, status, title) values (?, ?, ?, ?, ?, ?)', [randomNumber, email, category, message, 'Aberto', title], (error) => {
       if (error) {
         res.status(500).send('Falha ao conectar com o servidor, tente novamente')
       } else {
