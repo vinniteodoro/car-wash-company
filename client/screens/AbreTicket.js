@@ -62,7 +62,7 @@ export default function AbreTicketScreen({navigation}) {
         />
       </View>
         
-      <View className="w-full rounded-md mt-4 relative">
+      <View className="w-full rounded-md mt-2 relative">
         <SelectList setSelected={setType} data={options} placeholder='Selecione uma opção...' search={false}/>
         <TextInput 
           className="w-full h-32 text-base rounded-md bg-gray-500/10 mt-2 pl-2 focus:border-blue-950/90 focus:border-2" 

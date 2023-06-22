@@ -85,7 +85,7 @@ export default function PerfilScreen({navigation}) {
             </View>
           </TouchableOpacity>
           {userType === 'Parceiro' && (
-            <TouchableOpacity className="flex-row border-t border-b border-gray-100 py-2" onPress={() => navigation.navigate('CadastraServico')}>
+            <TouchableOpacity className="flex-row border-t border-b border-gray-100 py-2" onPress={() => navigation.navigate('Servicos')}>
               <View className="mt-2">
                 <Ionicons name="receipt-outline" size={24}/>
               </View>

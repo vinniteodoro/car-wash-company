@@ -25,6 +25,115 @@ app.use(cors())
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
+app.post('/api/insertService', async (req, res) => {
+  var {email, service1, service2, service3, service4, service5, details, smallPrice, mediumPrice, largePrice} = req.body
+
+  db.query('insert into services (email, service1, service2, service3, service4, service5, details, small_price, medium_price, large_price) values (?,?,?,?,?,?,?,?,?,?)', [email, service1, service2, service3, service4, service5, details, smallPrice.substring(3), mediumPrice.substring(3), largePrice.substring(3)], (error) => {
+    if (error) {
+      console.error(error)
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/updateService', async (req, res) => {
+  var {id, service1, service2, service3, service4, service5, details, smallPrice, mediumPrice, largePrice} = req.body
+
+  db.query('update services set service1=?, service2=?, service3=?, service4=?, service5=?, details=?, small_price=?, medium_price=?, large_price=? where id=?', [service1, service2, service3, service4, service5, details, smallPrice.substring(3), mediumPrice.substring(3), largePrice.substring(3), id], (error) => {
+    if (error) {
+      console.error(error)
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/deleteService', async (req, res) => {
+  const id = req.body.id
+
+  db.query('delete FROM services WHERE id=?', [id], (error) => {
+    if (error) {
+      console.error(error)
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/updateServicesComp', async (req, res) => {
+  var {email, deliveryFlag, commuteFee, kmRadius} = req.body
+
+  db.query('update services_comp set delivery_flag=?, commute_fee=?, km_radius=? where email=?', [deliveryFlag, commuteFee.substring(3), kmRadius, email], (error) => {
+    if (error) {
+      console.error(error)
+      res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      res.status(200).end()
+    }
+  })
+})
+
+app.post('/api/getServices', async (req, res) => {
+  const email = req.body.email
+  const servicesArray  = []
+
+  const getServices = () => {
+    return new Promise((resolve, reject) => {
+      db.query('SELECT * FROM services WHERE email=? order by createdAt desc', [email], (error, result) => {
+        if (error) {
+          reject('Falha ao conectar com o servidor, tente novamente')
+          res.status(400).send('Falha ao conectar com o servidor, tente novamente')
+        } else {
+          result.forEach((row) => {
+            const servicesData = {
+              id: row.id,
+              service1: row.service1,
+              service2: row.service2,
+              service3: row.service3,
+              service4: row.service4,
+              service5: row.service5,
+              details: row.details,
+              small_price: row.small_price,
+              medium_price: row.medium_price,
+              large_price: row.large_price
+            }
+            servicesArray.push(servicesData)
+          }) 
+          resolve()
+        }
+      })
+    })
+  }
+  await getServices()
+  res.status(200).send({servicesArray})
+})
+
+app.post('/api/getServicesComp', async (req, res) => {
+  const email = req.body.email
+
+  db.query('select * from services_comp where email=?', [email], (error, result) => {
+    if (error) {
+      res.status(500).send('Falha ao conectar com o servidor, tente novamente')
+    } else {
+      if (result.length > 0) {
+        const deliveryFlag = result[0].delivery_flag
+        const commuteFee = result[0].commute_fee
+        const kmRadius = result[0].km_radius
+        res.status(200).send({deliveryFlag, commuteFee, kmRadius})
+      } else {
+        const deliveryFlag = 0
+        const commuteFee = 0.00
+        const kmRadius = 0
+        res.status(200).send({deliveryFlag, commuteFee, kmRadius})
+      }
+    }
+  })
+})
+
 app.post('/api/getTickets', async (req, res) => {
   const email = req.body.email
   const ticketsArray  = []

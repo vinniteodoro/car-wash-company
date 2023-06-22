@@ -10,6 +10,7 @@ import AlteraCadastro from './screens/AlteraCadastro'
 import MeiosPagtoReceb from './screens/MeiosPagtoReceb'
 import Enderecos from './screens/Enderecos'
 import AbreTicket from './screens/AbreTicket'
+import Servicos from './screens/Servicos'
 import CadastraServico from './screens/CadastraServico'
 import AlteraEndereco from './screens/AlteraEndereco'
 import AlteraVeiculo from './screens/AlteraVeiculo'
@@ -43,6 +44,7 @@ export default function App() {
         <Stack.Screen name='Enderecos' component={Enderecos} options={{title: 'ENDEREÇOS'}}/>
         <Stack.Screen name='AbreTicket' component={AbreTicket} options={{title: 'ABRIR TICKET'}}/>
         <Stack.Screen name='ProblemaApp' component={ProblemaApp} options={{title: 'PROBLEMA COM O APP'}}/>
+        <Stack.Screen name='Servicos' component={Servicos} options={{title: 'SERVIÇOS'}}/>
         <Stack.Screen name='CadastraServico' component={CadastraServico} options={{title: 'CADASTRO DE SERVIÇOS'}}/>
         <Stack.Screen name='AlteraEndereco' component={AlteraEndereco} options={{title: 'ALTERAR ENDEREÇO'}}/>
         <Stack.Screen name='AlteraVeiculo' component={AlteraVeiculo} options={{title: 'ALTERAR VEÍCULO'}}/>

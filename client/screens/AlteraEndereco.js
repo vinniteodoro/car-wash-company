@@ -101,8 +101,8 @@ export default function AlteraEnderecoScreen({route, navigation}) {
       {mostrarForms ? (
         <>
           <View className="py-12 px-2">
-          <Text className="text-base">{logradouro}</Text>
-          <Text className="mb-1 text-neutral-400">{bairro}, {cidade} - {estado}</Text>
+            <Text className="text-base">{logradouro}</Text>
+            <Text className="mb-1 text-neutral-400">{bairro}, {cidade} - {estado}</Text>
           </View>
           <View className="px-2 mt-2 flex-row">
             <Text className="text-neutral-500">Número</Text>
